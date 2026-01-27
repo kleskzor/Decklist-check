@@ -1,0 +1,10 @@
+řadit abecedně (karty i hráče) - done
+zkontrolovaný karty házet naspod - done
+hledat podle jména hráčů
+scryfall obrázky - done
+deckchecknutý hráče (tj všechny karty zašedlý) zašednout - done
+hledat podle jmena karty
+obsluhovatelné klávesnicí?
+one-click deckcheck - done
+upravovatelný počet karet na řádek, škála 4-12 třeba?, defautlně 6
+počítadlo celkových karet, zkontrolovaných, zbývajících
