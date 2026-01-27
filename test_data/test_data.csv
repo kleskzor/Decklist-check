@@ -1,0 +1,1399 @@
+email,first_name,last_name,best_identifier,wizards_email,decklist,plaintext_list,archetype,fixed_seat,waitlisted_datetime,registration_completed_datetime,internal_notes,registration_status,has_byes_for_round_numbers,final_place_in_standings,event_name
+dummy@email.com,Xavier,Young,Xavier Young,dummy@email.com,https://moxfield.com/decks/t8hW4furnUSJ9p10r4hJng,"1 Island
+1 Swamp
+1 Command Tower
+1 Drown in the Loch
+1 Mystic Sanctuary
+1 Wishclaw Talisman
+1 Ash Barrens
+1 Baleful Strix
+1 Brainstorm
+1 Cabal Therapy
+1 Collective Brutality
+1 Counterspell
+1 Daze
+1 Demonic Tutor
+1 Dismember
+1 Duress
+1 Fatal Push
+1 Field of Ruin
+1 Frantic Search
+1 Gush
+1 Inquisition of Kozilek
+1 Laboratory Maniac
+1 Mana Leak
+1 Memory Lapse
+1 Preordain
+1 Snow-Covered Island
+1 Snow-Covered Swamp
+1 Tale's End
+1 Underground River
+1 Underground Sea
+1 Sunken Hollow
+1 Force Spike
+1 Cabal Ritual
+1 Tainted Isle
+1 Bloodstained Mire
+1 Flooded Strand
+1 Pact of Negation
+1 River of Tears
+1 Lake of the Dead
+1 Watery Grave
+1 Toxic Deluge
+1 Spell Snare
+1 Remand
+1 Dark Petition
+1 Snapcaster Mage
+1 Urborg, Tomb of Yawgmoth
+1 Marsh Flats
+1 Misty Rainforest
+1 Scalding Tarn
+1 Verdant Catacombs
+1 Sunken Ruins
+1 Polluted Delta
+1 Gitaxian Probe
+1 Darkslick Shores
+1 Drowned Catacomb
+1 Peek
+1 Stifle
+1 Massacre
+1 Reflecting Pool
+1 Unearth
+1 Jace, Wielder of Mysteries
+1 Prismatic Vista
+1 Fetid Pools
+1 Doomsday
+1 Thoughtseize
+1 Bad River
+1 Ponder
+1 Mental Misstep
+1 Demonic Consultation
+1 Cling to Dust
+1 Thought Lash
+1 Personal Tutor
+1 Solve the Equation
+1 Profane Tutor
+1 Lose Focus
+1 Consider
+1 Shipwreck Marsh
+1 Wash Away
+1 Otawara, Soaring City
+1 Takenuma, Abandoned Mire
+1 Currency Converter
+1 Cut Down
+1 Orcish Bowmasters
+1 Troll of Khazad-dûm
+1 Lórien Revealed
+1 Long Goodbye
+1 Undercity Sewers
+1 Psychic Frog
+1 Jace Reawakened
+1 Sink into Stupor // Soporific Springs
+1 Demonic Counsel
+1 Gloomlake Verge
+1 Unable to Scream
+1 Deluge of Doom
+1 Consult the Star Charts
+1 Multiversal Passage
+1 Wan Shi Tong, Librarian
+1 Agna Qel'a
+1 Tainted Pact
+
+SIDEBOARD:
+","Vohar, Vodalian Desecrator",,,"Dec 08, 2025 01:09 PM",,COMPLETE,,13,Finálový turnaj Najáda DC ligy
+dummy@email.com,Charles,Brown,Charles Brown,dummy@email.com,https://moxfield.com/decks/PTYirHe7BEq5bDI89UGHGg,"4 Island
+3 Mountain
+1 Bonecrusher Giant // Stomp
+1 Brazen Borrower // Petty Theft
+1 Command Tower
+1 Brainstorm
+1 Counterspell
+1 Daze
+1 Lightning Bolt
+1 Mana Leak
+1 Memory Lapse
+1 Mishra's Bauble
+1 Monastery Swiftspear
+1 Preordain
+1 Thought Scour
+1 Spell Pierce
+1 Chain Lightning
+1 Force Spike
+1 Urza's Bauble
+1 Mental Note
+1 Shivan Reef
+1 Bloodstained Mire
+1 Flooded Strand
+1 Flame Slash
+1 True-Name Nemesis
+1 Spell Snare
+1 Pyrokinesis
+1 Reckless Charge
+1 Steam Vents
+1 Delver of Secrets // Insectile Aberration
+1 Spirebluff Canal
+1 Arid Mesa
+1 Misty Rainforest
+1 Scalding Tarn
+1 Cascade Bluffs
+1 Polluted Delta
+1 Wooded Foothills
+1 Gitaxian Probe
+1 Volcanic Island
+1 Fiery Islet
+1 Force of Negation
+1 Lava Dart
+1 Prismatic Vista
+1 Ponder
+1 Mental Misstep
+1 Sprite Dragon
+1 Swarmyard
+1 Sulfur Falls
+1 Clout of the Dominus
+1 Riverglide Pathway // Lavaglide Pathway
+1 Expressive Iteration
+1 Subtlety
+1 Dragon's Rage Channeler
+1 Fury
+1 Unholy Heat
+1 Den of the Bugbear
+1 Consider
+1 Stormcarved Coast
+1 Wash Away
+1 Sokenzan, Crucible of Defiance
+1 Otawara, Soaring City
+1 Stern Scolding
+1 Lórien Revealed
+1 Monstrous Rage
+1 Malcolm, Alluring Scoundrel
+1 Inti, Seneschal of the Sun
+1 Thundering Falls
+1 Headliner Scarlett
+1 Duelist of the Mind
+1 Slickshot Show-Off
+1 Detective's Phoenix
+1 Sink into Stupor // Soporific Springs
+1 Sundering Eruption // Volcanic Fissure
+1 Galvanic Discharge
+1 Ghostfire Slice
+1 Arena of Glory
+1 Pyrogoyf
+1 Fear of Missing Out
+1 Screaming Nemesis
+1 Stormchaser's Talent
+1 Abhorrent Oculus
+1 Violent Urge
+1 Kellan, Planar Trailblazer
+1 Drake Hatcher
+1 Riverpyre Verge
+1 Winternight Stories
+1 Mistrise Village
+1 Cori Mountain Monastery
+1 Cori-Steel Cutter
+1 Wild Ride
+1 Astrologian's Planisphere
+1 Opera Love Song
+1 Multiversal Passage
+1 Wan Shi Tong, Librarian
+
+SIDEBOARD:
+",Spider-Man 2099,,,"Dec 08, 2025 01:12 PM",,COMPLETE,,6,Finálový turnaj Najáda DC ligy
+dummy@email.com,Xavier,Young,Xavier Young,dummy@email.com,https://moxfield.com/decks/CtEQk68T1EOchXVcVyP-cA,"6 Island
+3 Mountain
+1 Bonecrusher Giant // Stomp
+1 Brazen Borrower // Petty Theft
+1 Command Tower
+1 Brainstorm
+1 Counterspell
+1 Daze
+1 Fire // Ice
+1 Lightning Bolt
+1 Mana Leak
+1 Memory Lapse
+1 Mishra's Bauble
+1 Preordain
+1 Tale's End
+1 Opal Palace
+1 Force Spike
+1 Hydroblast
+1 Pyroblast
+1 Urza's Bauble
+1 Intuition
+1 Shivan Reef
+1 Bloodstained Mire
+1 Flooded Strand
+1 Vendilion Clique
+1 Flame Slash
+1 Spell Snare
+1 Remand
+1 Pyrokinesis
+1 Reckless Charge
+1 Snapcaster Mage
+1 Steam Vents
+1 Spirebluff Canal
+1 Arid Mesa
+1 Misty Rainforest
+1 Scalding Tarn
+1 Cascade Bluffs
+1 Polluted Delta
+1 Wooded Foothills
+1 Gitaxian Probe
+1 Peek
+1 Stifle
+1 Volcanic Island
+1 Dreadhorde Arcanist
+1 Fiery Islet
+1 Force of Negation
+1 Lava Dart
+1 Prismatic Vista
+1 Ponder
+1 Mental Misstep
+1 Swarmyard
+1 Sulfur Falls
+1 Clout of the Dominus
+1 Riverglide Pathway // Lavaglide Pathway
+1 Expressive Iteration
+1 Subtlety
+1 Dragon's Rage Channeler
+1 Lose Focus
+1 Fury
+1 Murktide Regent
+1 Unholy Heat
+1 Stormcarved Coast
+1 Wash Away
+1 Otawara, Soaring City
+1 Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+1 Ledger Shredder
+1 Oliphaunt
+1 Stern Scolding
+1 Lórien Revealed
+1 Malcolm, Alluring Scoundrel
+1 Tishana's Tidebinder
+1 Thundering Falls
+1 Duelist of the Mind
+1 Detective's Phoenix
+1 Sink into Stupor // Soporific Springs
+1 Sundering Eruption // Volcanic Fissure
+1 Galvanic Discharge
+1 Ghostfire Slice
+1 Arena of Glory
+1 Pyrogoyf
+1 Fear of Missing Out
+1 Abhorrent Oculus
+1 Riverpyre Verge
+1 Mistrise Village
+1 Cori Mountain Monastery
+1 Cori-Steel Cutter
+1 Wild Ride
+1 Quantum Riddler
+1 Consult the Star Charts
+1 Multiversal Passage
+1 Redirect Lightning
+1 Wan Shi Tong, Librarian
+
+SIDEBOARD:
+","Aragorn, King of Gondor",,,"Dec 10, 2025 10:04 PM",,COMPLETE,,5,Finálový turnaj Najáda DC ligy
+dummy@email.com,Edward,Davis,Edward Davis,dummy@email.com,https://moxfield.com/decks/kOnRD7k4wkmBU84f5grY1A,"1 Specter's Shriek
+1 Wishclaw Talisman
+1 Bojuka Bog
+1 Collective Brutality
+1 Demonic Tutor
+1 Duress
+1 Fatal Push
+1 Innocent Blood
+1 Inquisition of Kozilek
+1 Night's Whisper
+1 Grim Tutor
+1 Mind Twist
+1 Urza's Incubator
+1 Necropotence
+1 Cabal Coffers
+1 Cabal Ritual
+1 Hymn to Tourach
+1 Lake of the Dead
+1 Nihil Spellbomb
+1 Toxic Deluge
+1 Dark Petition
+1 Emrakul, the Promised End
+1 Urborg, Tomb of Yawgmoth
+1 Damnation
+1 Snuff Out
+1 Unmask
+1 Jet Medallion
+1 Dead of Winter
+1 Defile
+1 Force of Despair
+1 Thoughtseize
+1 Expedition Map
+1 Yawgmoth's Will
+1 Agonizing Remorse
+1 Cling to Dust
+1 Soul-Guide Lantern
+1 Dimir Machinations
+1 Shred Memory
+1 Beseech the Queen
+1 Heartless Summoning
+1 Bubbling Muck
+1 Bloodchief's Thirst
+1 Opposition Agent
+1 Urza's Saga
+1 Grief
+1 Profane Tutor
+1 Check for Traps
+1 Dread Fugue
+1 March of Wretched Sorrow
+1 Cut Down
+1 Relic of Legends
+1 Sheoldred's Edict
+1 Orcish Bowmasters
+1 Beseech the Mirror
+1 Bitter Triumph
+1 Long Goodbye
+1 Insatiable Avarice
+1 Urza's Cave
+1 Winter Moon
+1 Consuming Corruption
+1 Cruelclaw's Heist
+1 The Sibsig Ceremony
+1 Resentful Revelation
+36 Snow-Covered Swamp
+
+SIDEBOARD:
+1 Acererak the Archlich
+",Acererak the Archlich,,,"Dec 11, 2025 05:25 PM",,COMPLETE,,9,Finálový turnaj Najáda DC ligy
+dummy@email.com,Angela,Wilson,Angela Wilson,dummy@email.com,https://moxfield.com/decks/UZe5pf-EuEW-QeW3fqtRxA,"1 Castle Ardenvale
+1 Thalia, Guardian of Thraben
+1 Ephemerate
+1 Mana Tithe
+1 Mother of Runes
+1 Oust
+1 Palace Jailer
+1 Recruiter of the Guard
+1 Skullclamp
+1 Swords to Plowshares
+1 Tectonic Edge
+1 Containment Priest
+1 Cataclysm
+1 City of Traitors
+1 Eiganjo Castle
+1 Tangle Wire
+1 Flickerwisp
+1 Command Beacon
+1 Benevolent Bodyguard
+1 Enlightened Tutor
+1 Crystal Vein
+1 Flagstones of Trokair
+1 Scavenger Grounds
+1 Blade Splicer
+1 Dust Bowl
+1 Rishadan Port
+1 Umezawa's Jitte
+1 Stoneforge Mystic
+1 Reverent Mantra
+1 Parallax Wave
+1 Giver of Runes
+1 On Thin Ice
+1 Ranger-Captain of Eos
+1 Burrenton Forge-Tender
+1 Drannith Magistrate
+1 Gemstone Caverns
+1 Skyclave Apparition
+1 Elite Spellbinder
+1 Urza's Saga
+1 Portable Hole
+1 Esper Sentinel
+1 Solitude
+1 The Wandering Emperor
+1 March of Otherworldly Light
+1 Lion Sash
+1 Eiganjo, Seat of the Empire
+1 Swift Reconfiguration
+1 Seasoned Dungeoneer
+1 Loran of the Third Path
+1 Steel Seraph
+1 Skrelv, Defector Mite
+1 Ossification
+1 Staff of the Storyteller
+1 Glimmer Lens
+1 Samwise the Stouthearted
+1 Reprieve
+1 Get Lost
+1 Pre-War Formalwear
+1 Flare of Fortitude
+1 Witch Enchanter // Witch-Blessed Meadow
+1 Disruptor Flute
+1 Razorgrass Ambush // Razorgrass Field
+1 Guide of Souls
+1 Static Prison
+1 Ocelot Pride
+1 Lazotep Quarry
+1 Talon Gates of Madara
+1 Overlord of the Mistmoors
+1 Ghost Vacuum
+1 Voice of Victory
+1 Cloud, Midgar Mercenary
+1 Starfield Shepherd
+1 Seam Rip
+1 Spectacular Spider-Man
+1 Aang's Iceberg
+1 Arachne, Psionic Weaver
+1 Abandoned Air Temple
+22 Snow-Covered Plains
+
+SIDEBOARD:
+","Phelia, Exuberant Shepherd",,,"Dec 11, 2025 07:46 PM",,COMPLETE,,4,Finálový turnaj Najáda DC ligy
+dummy@email.com,Benjamin,Smith,Benjamin Smith,dummy@email.com,https://moxfield.com/decks/jhlfsazP5keg5ntwJqDruQ,"1 Thalia, Guardian of Thraben
+1 Ephemerate
+1 Mana Tithe
+1 Mother of Runes
+1 Oust
+1 Palace Jailer
+1 Recruiter of the Guard
+1 Skullclamp
+1 Swords to Plowshares
+1 Tectonic Edge
+1 Containment Priest
+1 Cataclysm
+1 City of Traitors
+1 Eiganjo Castle
+1 Tangle Wire
+1 Flickerwisp
+1 Command Beacon
+1 Benevolent Bodyguard
+1 Enlightened Tutor
+1 Crystal Vein
+1 Flagstones of Trokair
+1 Scavenger Grounds
+1 Blade Splicer
+1 Dust Bowl
+1 Rishadan Port
+1 Umezawa's Jitte
+1 Stoneforge Mystic
+1 Reverent Mantra
+1 Parallax Wave
+1 Giver of Runes
+1 On Thin Ice
+1 Ranger-Captain of Eos
+1 Burrenton Forge-Tender
+1 Drannith Magistrate
+1 Gemstone Caverns
+1 Skyclave Apparition
+1 Elite Spellbinder
+1 Urza's Saga
+1 Portable Hole
+1 Esper Sentinel
+1 Solitude
+1 Sanctifier en-Vec
+1 Cathar Commando
+1 The Wandering Emperor
+1 March of Otherworldly Light
+1 Eiganjo, Seat of the Empire
+1 Swift Reconfiguration
+1 Seasoned Dungeoneer
+1 Steel Seraph
+1 Skrelv, Defector Mite
+1 Ossification
+1 Staff of the Storyteller
+1 Glimmer Lens
+1 Samwise the Stouthearted
+1 Reprieve
+1 Get Lost
+1 Pre-War Formalwear
+1 Witch Enchanter // Witch-Blessed Meadow
+1 Disruptor Flute
+1 Razorgrass Ambush // Razorgrass Field
+1 Guide of Souls
+1 Static Prison
+1 Ocelot Pride
+1 Lazotep Quarry
+1 Talon Gates of Madara
+1 Toby, Beastie Befriender
+1 Overlord of the Mistmoors
+1 Ghost Vacuum
+1 Voice of Victory
+1 Cloud, Midgar Mercenary
+1 Starfield Shepherd
+1 Seam Rip
+1 Spectacular Spider-Man
+1 The Duke, Rebel Sentry
+1 Abandoned Air Temple
+24 Snow-Covered Plains
+
+SIDEBOARD:
+","Phelia, Exuberant Shepherd",,,"Dec 12, 2025 09:09 AM",,COMPLETE,,3,Finálový turnaj Najáda DC ligy
+dummy@email.com,Anna,Miller,Anna Miller,dummy@email.com,https://moxfield.com/decks/3xSd34N420-0LyXIh4Rotw,"1 Island
+1 Mountain
+1 Swamp
+1 Kroxa, Titan of Death's Hunger
+1 Arcane Signet
+1 Command Tower
+1 Anger
+1 Animate Dead
+1 Baleful Strix
+1 Brainstorm
+1 Counterspell
+1 Daze
+1 Duress
+1 Fatal Push
+1 Inquisition of Kozilek
+1 Lightning Bolt
+1 Mana Leak
+1 Memory Lapse
+1 Preordain
+1 Tarfire
+1 Terminate
+1 Tale's End
+1 Badlands
+1 Underground Sea
+1 Force Spike
+1 Bloodstained Mire
+1 Flooded Strand
+1 Watery Grave
+1 Toxic Deluge
+1 Spell Snare
+1 Remand
+1 Snapcaster Mage
+1 Blood Crypt
+1 Steam Vents
+1 Arid Mesa
+1 Marsh Flats
+1 Misty Rainforest
+1 Scalding Tarn
+1 Verdant Catacombs
+1 Polluted Delta
+1 Wooded Foothills
+1 Seat of the Synod
+1 Drowned Catacomb
+1 Stifle
+1 Vault of Whispers
+1 Parallax Tide
+1 Reflecting Pool
+1 Volcanic Island
+1 Force of Negation
+1 Prismatic Vista
+1 Thoughtseize
+1 Ponder
+1 Mental Misstep
+1 Cling to Dust
+1 Shadow of Doubt
+1 Tainted Pact
+1 Opposition Agent
+1 Hullbreacher
+1 Grief
+1 Subtlety
+1 Lose Focus
+1 Fury
+1 Haunted Ridge
+1 Shipwreck Marsh
+1 Stormcarved Coast
+1 Wash Away
+1 Otawara, Soaring City
+1 Takenuma, Abandoned Mire
+1 Chaos Defiler
+1 Change the Equation
+1 Orcish Bowmasters
+1 Troll of Khazad-dûm
+1 Stern Scolding
+1 Flame of Anor
+1 Lórien Revealed
+1 Sauron's Ransom
+1 Tishana's Tidebinder
+1 Raucous Theater
+1 Thundering Falls
+1 Undercity Sewers
+1 Psychic Frog
+1 Nethergoyf
+1 Detective's Phoenix
+1 Emperor of Bones
+1 Sink into Stupor // Soporific Springs
+1 Arena of Glory
+1 Barrowgoyf
+1 Pyrogoyf
+1 Gloomlake Verge
+1 Blazemire Verge
+1 Deluge of Doom
+1 Riverpyre Verge
+1 Mistrise Village
+1 Consult the Star Charts
+1 Wan Shi Tong, Librarian
+1 Drown in the Loch
+1 Unholy Heat
+1 Demonic Tutor
+1 Kolaghan's Command
+
+SIDEBOARD:
+","Kefka, Court Mage // Kefka, Ruler of Ruin",,,"Dec 12, 2025 09:14 AM",,COMPLETE,,12,Finálový turnaj Najáda DC ligy
+dummy@email.com,Aurora,Anderson,Aurora Anderson,dummy@email.com,https://moxfield.com/decks/6Mdcsw2cqE2zjdrXoNjDHQ,"1 Island
+1 Command Tower
+1 Oko, Thief of Crowns
+1 Arbor Elf
+1 Avacyn's Pilgrim
+1 Birds of Paradise
+1 Eldritch Evolution
+1 Ephemerate
+1 Eternal Witness
+1 Llanowar Elves
+1 Mother of Runes
+1 Palace Jailer
+1 Recruiter of the Guard
+1 Skullclamp
+1 Swords to Plowshares
+1 Wild Growth
+1 Savannah
+1 Tundra
+1 Tropical Island
+1 Brushland
+1 Flooded Strand
+1 Dryad Arbor
+1 Fyndhorn Elves
+1 Noble Hierarch
+1 Breeding Pool
+1 Green Sun's Zenith
+1 Elvish Mystic
+1 Spellseeker
+1 Hallowed Fountain
+1 Knight of Autumn
+1 Temple Garden
+1 Botanical Sanctum
+1 Arid Mesa
+1 Marsh Flats
+1 Misty Rainforest
+1 Scalding Tarn
+1 Restoration Angel
+1 Verdant Catacombs
+1 Voice of Resurgence
+1 Polluted Delta
+1 Wooded Bastion
+1 Windswept Heath
+1 Wooded Foothills
+1 Chord of Calling
+1 Razorverge Thicket
+1 Seachrome Coast
+1 Sunpetal Grove
+1 Stoneforge Mystic
+1 Utopia Sprawl
+1 Eladamri's Call
+1 Parallax Wave
+1 Neoform
+1 Teferi, Time Raveler
+1 Giver of Runes
+1 Prismatic Vista
+1 Ranger-Captain of Eos
+1 Soulherder
+1 Mental Misstep
+1 Drannith Magistrate
+1 Branchloft Pathway // Boulderloft Pathway
+1 Skyclave Apparition
+1 Elite Spellbinder
+1 Urza's Saga
+1 Portable Hole
+1 Prismatic Ending
+1 Yavimaya, Cradle of Growth
+1 Solitude
+1 Endurance
+1 Boseiju, Who Endures
+1 Lion Sash
+1 Otawara, Soaring City
+1 Eiganjo, Seat of the Empire
+1 Extraction Specialist
+1 Seasoned Dungeoneer
+1 Haywire Mite
+1 Delighted Halfling
+1 Hedge Maze
+1 Lush Portico
+1 Meticulous Archive
+1 Pre-War Formalwear
+1 Phelia, Exuberant Shepherd
+1 Witch Enchanter // Witch-Blessed Meadow
+1 Tamiyo, Inquisitive Student // Tamiyo, Seasoned Scholar
+1 Guide of Souls
+1 Birthing Ritual
+1 Springheart Nantuko
+1 Ocelot Pride
+1 Keen-Eyed Curator
+1 Hushwood Verge
+1 Brightglass Gearhulk
+1 Voice of Victory
+1 Cloud, Midgar Mercenary
+1 Seam Rip
+1 Aang, Swift Savior // Aang and La, Ocean's Fury
+1 Abandoned Air Temple
+2 Plains
+2 Forest
+
+SIDEBOARD:
+",Peter Parker // Amazing Spider-Man,,,"Dec 12, 2025 01:54 PM",,COMPLETE,,10,Finálový turnaj Najáda DC ligy
+dummy@email.com,Ulysses,Lee,Ulysses Lee,dummy@email.com,https://moxfield.com/decks/wS88qWF5GkSoYaYyhzCyrw,"1 Island
+1 Plains
+1 Swamp
+1 Arcane Signet
+1 Command Tower
+1 Drown in the Loch
+1 Mystic Sanctuary
+1 Baleful Strix
+1 Brainstorm
+1 Counterspell
+1 Demonic Tutor
+1 Fatal Push
+1 Mana Leak
+1 Mana Tithe
+1 Memory Lapse
+1 Mystic Confluence
+1 Oust
+1 Preordain
+1 Supreme Verdict
+1 Swords to Plowshares
+1 Tectonic Edge
+1 Temple of the False God
+1 Tale's End
+1 Scrubland
+1 Tundra
+1 Underground Sea
+1 Force Spike
+1 Bloodstained Mire
+1 Flooded Strand
+1 Minamo, School at Water's Edge
+1 Watery Grave
+1 Toxic Deluge
+1 Spell Snare
+1 Remand
+1 Emrakul, the Promised End
+1 Crystal Vein
+1 Creeping Tar Pit
+1 Snapcaster Mage
+1 Hallowed Fountain
+1 Arid Mesa
+1 Marsh Flats
+1 Misty Rainforest
+1 Scalding Tarn
+1 Verdant Catacombs
+1 Mystic Gate
+1 Polluted Delta
+1 Windswept Heath
+1 Cryptic Command
+1 Darkslick Shores
+1 Drowned Catacomb
+1 Glacial Fortress
+1 Stifle
+1 Reflecting Pool
+1 Tithe
+1 Teferi, Hero of Dominaria
+1 Teferi, Time Raveler
+1 Force of Negation
+1 Kaya's Guile
+1 Prismatic Vista
+1 Thoughtseize
+1 Plea for Power
+1 Ponder
+1 Mental Misstep
+1 Cling to Dust
+1 Tainted Pact
+1 Prismatic Ending
+1 Subtlety
+1 Solitude
+1 Damn
+1 Lose Focus
+1 Hall of Storm Giants
+1 Deserted Beach
+1 Shipwreck Marsh
+1 Memory Deluge
+1 Wash Away
+1 March of Otherworldly Light
+1 Otawara, Soaring City
+1 Eiganjo, Seat of the Empire
+1 Shorikai, Genesis Engine
+1 Raffine's Tower
+1 Void Rend
+1 Cut Down
+1 Reprieve
+1 Orcish Bowmasters
+1 Stern Scolding
+1 Lórien Revealed
+1 Sauron's Ransom
+1 Long Goodbye
+1 Meticulous Archive
+1 No More Lies
+1 Undercity Sewers
+1 Psychic Frog
+1 Cactus Preserve
+1 Wrath of the Skies
+1 Sink into Stupor // Soporific Springs
+1 Gloomlake Verge
+1 Floodfarm Verge
+1 Stock Up
+1 Consult the Star Charts
+
+SIDEBOARD:
+","Tivit, Seller of Secrets",,,"Dec 12, 2025 06:30 PM",,COMPLETE,,2,Finálový turnaj Najáda DC ligy
+dummy@email.com,Quincy,Robinson,Quincy Robinson,dummy@email.com,https://www.moxfield.com/decks/i9EFj48KYEmIthBs35SVAg,"1 Mountain
+1 Plains
+1 Forest
+1 Command Tower
+1 Arbor Elf
+1 Avacyn's Pilgrim
+1 Birds of Paradise
+1 Eldritch Evolution
+1 Felidar Guardian
+1 Kiki-Jiki, Mirror Breaker
+1 Lightning Bolt
+1 Llanowar Elves
+1 Mana Tithe
+1 Mother of Runes
+1 Palace Jailer
+1 Swords to Plowshares
+1 Wild Growth
+1 Walking Ballista
+1 Veil of Summer
+1 Plateau
+1 Savannah
+1 Taiga
+1 Survival of the Fittest
+1 Phyrexian Altar
+1 Bloodstained Mire
+1 Flooded Strand
+1 Dryad Arbor
+1 Grove of the Burnwillows
+1 Fyndhorn Elves
+1 Sword of Fire and Ice
+1 Sacred Foundry
+1 Stomping Ground
+1 Green Sun's Zenith
+1 Elvish Mystic
+1 Karmic Guide
+1 Devoted Druid
+1 Knight of Autumn
+1 Temple Garden
+1 Renegade Rallier
+1 Arid Mesa
+1 Marsh Flats
+1 Misty Rainforest
+1 Scalding Tarn
+1 Restoration Angel
+1 Verdant Catacombs
+1 Voice of Resurgence
+1 Fire-Lit Thicket
+1 Wooded Bastion
+1 Windswept Heath
+1 Wooded Foothills
+1 Chord of Calling
+1 Copperline Gorge
+1 Razorverge Thicket
+1 Stoneforge Mystic
+1 Wall of Roots
+1 Utopia Sprawl
+1 Eladamri's Call
+1 Orim's Chant
+1 Giver of Runes
+1 Prismatic Vista
+1 Ranger-Captain of Eos
+1 Wrenn and Six
+1 Birthing Pod
+1 Vizier of Remedies
+1 Yavimaya Hollow
+1 Gemstone Caverns
+1 Saffi Eriksdotter
+1 Skyclave Apparition
+1 Prismatic Ending
+1 Solitude
+1 Endurance
+1 Fury
+1 Lair of the Hydra
+1 Boseiju, Who Endures
+1 Swift Reconfiguration
+1 Minsc & Boo, Timeless Heroes
+1 Vivien on the Hunt
+1 Extraction Specialist
+1 Mawloc
+1 Delighted Halfling
+1 Agatha's Soul Cauldron
+1 Broadside Bombardiers
+1 Commercial District
+1 Lush Portico
+1 Archdruid's Charm
+1 Pre-War Formalwear
+1 Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+1 Phlage, Titan of Fire's Fury
+1 Fanatic of Rhonas
+1 Arena of Glory
+1 Pyrogoyf
+1 Hushwood Verge
+1 Brightglass Gearhulk
+1 Voice of Victory
+1 Surrak, Elusive Hunter
+1 Nature's Rhythm
+1 Starting Town
+1 Frenzied Baloth
+1 Badgermole Cub
+
+SIDEBOARD:
+","Rocco, Cabaretti Caterer",,,"Dec 12, 2025 07:00 PM",,COMPLETE,,14,Finálový turnaj Najáda DC ligy
+dummy@email.com,George,Taylor,George Taylor,dummy@email.com,https://moxfield.com/decks/2iVpUAnFKUuP0X1Fj9RABg,"1 Dwarven Mine
+1 Burst Lightning
+1 Galvanic Blast
+1 Lightning Bolt
+1 Mishra's Bauble
+1 Shock
+1 Tarfire
+1 Tectonic Edge
+1 Red Elemental Blast
+1 Fiery Confluence
+1 Chain Lightning
+1 Hammerheim
+1 Pyroblast
+1 Urza's Bauble
+1 Grim Lavamancer
+1 Bloodstained Mire
+1 Magus of the Moon
+1 Flame Slash
+1 Pyrokinesis
+1 Relic of Progenitus
+1 Scrabbling Claws
+1 Bomat Courier
+1 Arid Mesa
+1 Scalding Tarn
+1 Dust Bowl
+1 Wooded Foothills
+1 Rishadan Port
+1 Skred
+1 Seal of Fire
+1 Tower of the Magistrate
+1 Phyrexian Furnace
+1 Seasoned Pyromancer
+1 Wild Slash
+1 Ruination
+1 Rending Volley
+1 Shatterskull Smashing // Shatterskull, the Hammer Pass
+1 Magmatic Channeler
+1 War Room
+1 Laelia, the Blade Reforged
+1 Urza's Saga
+1 Dragon's Rage Channeler
+1 Fury
+1 Unholy Heat
+1 Mine Collapse
+1 Den of the Bugbear
+1 Play with Fire
+1 Sokenzan, Crucible of Defiance
+1 Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+1 Unlicensed Hearse
+1 Lithomantic Barrage
+1 Palantír of Orthanc
+1 Agatha's Soul Cauldron
+1 Bonehoard Dracosaur
+1 Inti, Seneschal of the Sun
+1 Broadside Bombardiers
+1 Synth Eradicator
+1 Winter Moon
+1 Detective's Phoenix
+1 Disruptor Flute
+1 Galvanic Discharge
+1 Ghostfire Slice
+1 Party Thrasher
+1 Arena of Glory
+1 Fanged Flames
+1 Pyrogoyf
+1 Fear of Missing Out
+1 Screaming Nemesis
+1 Hired Claw
+1 Fountainport
+1 Ghost Vacuum
+1 Untimely Malfunction
+1 Kellan, Planar Trailblazer
+1 Tersa Lightshatter
+1 Cori-Steel Cutter
+1 Gau, Feral Youth
+1 Knuckles the Echidna
+23 Snow-Covered Mountain
+
+SIDEBOARD:
+","Magda, the Hoardmaster",,,"Dec 12, 2025 08:57 PM",,COMPLETE,,1,Finálový turnaj Najáda DC ligy
+dummy@email.com,Thomas,Lewis,Thomas Lewis,dummy@email.com,https://moxfield.com/decks/afYgQ0EankiYjz6DnkyAdw,"1 Desperate Ritual
+1 Bayou
+1 Badlands
+1 Taiga
+1 Dwarven Ruins
+1 Ebon Stronghold
+1 Pyroblast
+1 Urza's Bauble
+1 Culling the Weak
+1 Cabal Ritual
+1 Bloodstained Mire
+1 Pentad Prism
+1 Lake of the Dead
+1 Bonus Round
+1 Diabolic Intent
+1 Dark Petition
+1 Traverse the Ulvenwald
+1 Crystal Vein
+1 Urborg, Tomb of Yawgmoth
+1 Blood Crypt
+1 Phyrexian Tower
+1 Songs of the Damned
+1 Abrupt Decay
+1 Mausoleum Secrets
+1 Overgrown Tomb
+1 Arid Mesa
+1 Marsh Flats
+1 Misty Rainforest
+1 Scalding Tarn
+1 Verdant Catacombs
+1 Polluted Delta
+1 Windswept Heath
+1 Wooded Foothills
+1 Pyretic Ritual
+1 Rite of Flame
+1 Seething Song
+1 Tendrils of Agony
+1 Peat Bog
+1 Sandstone Needle
+1 Unmask
+1 Final Fortune
+1 Squandered Resources
+1 Prismatic Vista
+1 Ransack the Lab
+1 Thoughtseize
+1 Yawgmoth's Will
+1 Springleaf Drum
+1 Worldly Tutor
+1 Tinder Wall
+1 Elvish Spirit Guide
+1 Simian Spirit Guide
+1 Infernal Plunge
+1 Tainted Pact
+1 Jeska's Will
+1 Mountain
+1 Swamp
+1 Command Tower
+1 Wishclaw Talisman
+1 Crop Rotation
+1 Demonic Tutor
+1 Duress
+1 Fatal Push
+1 Inquisition of Kozilek
+1 Lightning Bolt
+1 Manamorphose
+1 Mishra's Bauble
+1 Skullclamp
+1 Street Wraith
+1 Grim Tutor
+1 Peer into the Abyss
+1 Snow-Covered Swamp
+1 Red Elemental Blast
+1 Veil of Summer
+1 Impulsive Pilferer
+1 Urza's Saga
+1 Grief
+1 Profane Tutor
+1 Strike It Rich
+1 Fury
+1 Shambling Ghast
+1 Deadly Dispute
+1 Cut Down
+1 Orcish Bowmasters
+1 Oliphaunt
+1 Generous Ent
+1 Troll of Khazad-dûm
+1 Beseech the Mirror
+1 Greedy Freebooter
+1 Commercial District
+1 Raucous Theater
+1 Underground Mortuary
+1 Pillage the Bog
+1 Elemental Eruption
+1 Flare of Duplication
+1 Galvanic Discharge
+1 Demonic Counsel
+1 Stormscale Scion
+1 Resentful Revelation
+
+SIDEBOARD:
+","Ikra Shidiqi, the Usurper/Rograkh, Son of Rohgahh",,,"Dec 12, 2025 10:04 PM",,COMPLETE,,7,Finálový turnaj Najáda DC ligy
+dummy@email.com,Adam,Wright,Adam Wright,dummy@email.com,https://moxfield.com/decks/_WjWKn5dE0uTaKj4PB8mVQ,"10 Forest
+1 Castle Garenbrig
+1 Fabled Passage
+1 Gingerbread Cabin
+1 Beast Within
+1 Crop Rotation
+1 Sylvan Scrying
+1 Tectonic Edge
+1 Wild Growth
+1 Sylvan Library
+1 Elvish Reclaimer
+1 Lotus Field
+1 Urza's Tower
+1 Havenwood Battleground
+1 City of Traitors
+1 Summoner's Pact
+1 Zuran Orb
+1 Green Sun's Zenith
+1 Command Beacon
+1 Maze of Ith
+1 Traverse the Ulvenwald
+1 Emrakul, the Promised End
+1 Crystal Vein
+1 Misty Rainforest
+1 Verdant Catacombs
+1 Windswept Heath
+1 Wooded Foothills
+1 Rishadan Port
+1 Primeval Titan
+1 Lotus Cobra
+1 Utopia Sprawl
+1 Tree of Tales
+1 Hickory Woodlot
+1 Arboreal Grazer
+1 Blast Zone
+1 Finale of Devastation
+1 Prismatic Vista
+1 Expedition Map
+1 Exploration
+1 Vesuva
+1 Glacial Chasm
+1 Worldly Tutor
+1 Amulet of Vigor
+1 Elvish Spirit Guide
+1 Burgeoning
+1 Spatial Contortion
+1 Gemstone Caverns
+1 Mirrorpool
+1 Thought-Knot Seer
+1 Wastes
+1 Guildless Commons
+1 Urza's Saga
+1 Yavimaya, Cradle of Growth
+1 Endurance
+1 Tireless Provisioner
+1 Boseiju, Who Endures
+1 Cabaretti Courtyard
+1 Riveteers Overlook
+1 Brokers Hideout
+1 Tiller Engine
+1 Delighted Halfling
+1 Spelunking
+1 Pit of Offerings
+1 Echoing Deeps
+1 Archdruid's Charm
+1 Arid Archway
+1 Urza's Cave
+1 Planar Nexus
+1 Disciple of Freyalise // Garden of Freyalise
+1 Six
+1 Bridgeworks Battle // Tanglespan Bridgeworks
+1 Shifting Woodland
+1 Sowing Mycospawn
+1 Kozilek's Command
+1 Fanatic of Rhonas
+1 Springheart Nantuko
+1 Malevolent Rumble
+1 Eldrazi Confluence
+1 Horizon of Progress
+1 Lazotep Quarry
+1 Talon Gates of Madara
+1 Insidious Fungus
+1 Nature's Rhythm
+1 Tezzeret, Cruel Captain
+1 Horizon Explorer
+1 Badgermole Cub
+1 Ba Sing Se
+1 Dust Bowl
+1 Icetill Explorer
+1 Nissa, Resurgent Animist
+
+SIDEBOARD:
+","Lumra, Bellow of the Woods",,,"Dec 12, 2025 10:14 PM",,COMPLETE,,8,Finálový turnaj Najáda DC ligy
+dummy@email.com,Michael,Martin,Michael Martin,dummy@email.com,https://moxfield.com/decks/oafa_BKgY0eE2BcimQRiEQ,"1 Island
+1 Forest
+1 Swamp
+1 Command Tower
+1 Counterspell
+1 Duress
+1 Fatal Push
+1 Memory Lapse
+1 Tale's End
+1 Force Spike
+1 Minamo, School at Water's Edge
+1 Logic Knot
+1 Toxic Deluge
+1 Deathrite Shaman
+1 Snapcaster Mage
+1 Tasigur, the Golden Fang
+1 Urborg, Tomb of Yawgmoth
+1 Abrupt Decay
+1 Polluted Delta
+1 Cryptic Command
+1 Gitaxian Probe
+1 Miscalculation
+1 Force of Negation
+1 Prismatic Vista
+1 Cling to Dust
+1 Zagoth Triome
+1 Clearwater Pathway // Murkwater Pathway
+1 Profane Tutor
+1 Subtlety
+1 Lose Focus
+1 Murktide Regent
+1 Wash Away
+1 Sheoldred's Edict
+1 Stern Scolding
+1 Lórien Revealed
+1 Long Goodbye
+1 Psychic Frog
+1 Brainsurge
+1 Unable to Scream
+1 Rakshasa's Bargain
+1 Mystic Sanctuary
+1 Baleful Strix
+1 Brainstorm
+1 Daze
+1 Demonic Tutor
+1 Dismember
+1 Gush
+1 Inquisition of Kozilek
+1 Mana Leak
+1 Misdirection
+1 Mystic Confluence
+1 Preordain
+1 Snow-Covered Island
+1 Snow-Covered Swamp
+1 Veil of Summer
+1 Underground River
+1 Bayou
+1 Tropical Island
+1 Underground Sea
+1 Intuition
+1 Bloodstained Mire
+1 Flooded Strand
+1 Breeding Pool
+1 Watery Grave
+1 Spell Snare
+1 Remand
+1 Overgrown Tomb
+1 Marsh Flats
+1 Misty Rainforest
+1 Scalding Tarn
+1 Verdant Catacombs
+1 Windswept Heath
+1 Wooded Foothills
+1 Darkslick Shores
+1 Peek
+1 Unearth
+1 Ashiok, Dream Render
+1 Jace, Wielder of Mysteries
+1 Doomsday
+1 Thoughtseize
+1 Exploration
+1 Mental Misstep
+1 Noxious Revival
+1 Demonic Consultation
+1 Thought Lash
+1 Tainted Pact
+1 Boseiju, Who Endures
+1 Otawara, Soaring City
+1 Takenuma, Abandoned Mire
+1 Orcish Bowmasters
+1 Hedge Maze
+1 Undercity Sewers
+1 Underground Mortuary
+1 Tamiyo, Inquisitive Student // Tamiyo, Seasoned Scholar
+1 Gloomlake Verge
+1 Willowrush Verge
+1 Mistrise Village
+1 Consult the Star Charts
+1 Wan Shi Tong, Librarian
+
+SIDEBOARD:
+","Glarb, Calamity's Augur",,,"Dec 12, 2025 10:40 PM",,COMPLETE,,11,Finálový turnaj Najáda DC ligy
+dummy@email.com,Yuri,Hernandez,Yuri Hernandez,dummy@email.com,https://moxfield.com/decks/IGQKrkJuLEGa-QxXwgjpHQ,"8 Island
+2 Swamp
+1 Castle Vantress
+1 Command Tower
+1 Drown in the Loch
+1 Mystic Sanctuary
+1 Baleful Strix
+1 Brainstorm
+1 Counterspell
+1 Daze
+1 Demonic Tutor
+1 Dismember
+1 Fatal Push
+1 Field of Ruin
+1 Inquisition of Kozilek
+1 Mana Leak
+1 Memory Lapse
+1 Mystic Confluence
+1 Preordain
+1 Tale's End
+1 Force Spike
+1 Intuition
+1 Bloodstained Mire
+1 Flooded Strand
+1 Vedalken Shackles
+1 Underground Sea
+1 Watery Grave
+1 Toxic Deluge
+1 Spell Snare
+1 Remand
+1 Creeping Tar Pit
+1 Snapcaster Mage
+1 Damnation
+1 Marsh Flats
+1 Misty Rainforest
+1 Parallax Nexus
+1 Parallax Tide
+1 Prismatic Vista
+1 Thoughtseize
+1 Ponder
+1 Mental Misstep
+1 Cling to Dust
+1 Riptide Laboratory
+1 Shadow of Doubt
+1 Trickbind
+1 Clearwater Pathway // Murkwater Pathway
+1 Opposition Agent
+1 Profane Tutor
+1 Subtlety
+1 Lose Focus
+1 Hall of Storm Giants
+1 Cryptic Command
+1 Darkslick Shores
+1 Drowned Catacomb
+1 Peek
+1 Stifle
+1 Shipwreck Marsh
+1 Siphon Insight
+1 Memory Deluge
+1 Wash Away
+1 Otawara, Soaring City
+1 Demolition Field
+1 Sheoldred's Edict
+1 Change the Equation
+1 Orcish Bowmasters
+1 Stern Scolding
+1 Lórien Revealed
+1 Sauron's Ransom
+1 Tishana's Tidebinder
+1 Long Goodbye
+1 Undercity Sewers
+1 Psychic Frog
+1 Brainsurge
+1 Harbinger of the Seas
+1 Sink into Stupor // Soporific Springs
+1 Sunken Ruins
+1 Polluted Delta
+1 Cut Down
+1 Barrowgoyf
+1 Gloomlake Verge
+1 Abhorrent Oculus
+1 Stock Up
+1 Mistrise Village
+1 Consult the Star Charts
+1 Wan Shi Tong, Librarian
+1 Agna Qel'a
+1 Scalding Tarn
+1 Murktide Regent
+1 Gitaxian Probe
+1 Spider-Sense
+1 Verdant Catacombs
+
+SIDEBOARD:
+",Ertai Resurrected,,,"Dec 12, 2025 11:53 PM",,COMPLETE,,15,Finálový turnaj Najáda DC ligy

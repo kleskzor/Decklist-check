@@ -70,14 +70,27 @@
         .player-item.active { background: var(--accent-color); }
         .player-item.is-done { opacity: 0.5; background: #0a0a0a; }
 
+        .dropdown-menu { display: none; position: absolute; right: 0; top: 50px; background: #222; border: 1px solid #444; border-radius: 5px; z-index: 200; min-width: 200px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .menu-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #333; transition: background 0.2s; }
+        .menu-item:hover { background: #333; }
+        .menu-item:last-child { border-bottom: none; }
+
         @media (max-width: 1600px) { .deck-grid { grid-template-columns: repeat(4, 1fr); } }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-weight: bold; font-size: 1.2rem;">MTG Deck Checker Pro v12</div>
-    <input type="file" id="fileInput" accept=".csv">
+    <div style="font-weight: bold; font-size: 1.2rem;">MTG Deck Checker Pro</div>
+    <div style="position: relative;">
+        <img src="./img/menu_icon.png" alt="Menu" id="menuBtn" style="cursor: pointer; height: 30px;" onclick="toggleMenu(event)">
+        <div id="dropdownMenu" class="dropdown-menu">
+            <div class="menu-item" onclick="document.getElementById('dropdownMenu').style.display='none'; document.getElementById('fileInput').click()">📂 Nahrát decklisty (CSV)</div>
+            <div class="menu-item" onclick="document.getElementById('dropdownMenu').style.display='none'; loadTestData()">🧪 Nahrát testovací data</div>
+            <div class="menu-item" onclick="document.getElementById('dropdownMenu').style.display='none'; deleteAllPlayers()" style="color: var(--danger-color);">🗑️ Smazat vše</div>
+        </div>
+    </div>
+    <input type="file" id="fileInput" accept=".csv" style="display: none;">
 </header>
 
 <div id="sidebar">
@@ -94,6 +107,20 @@
     let players = [];
     let currentSelectedName = null;
     let highlightedIndex = -1;
+
+    function toggleMenu(e) {
+        e.stopPropagation();
+        const menu = document.getElementById('dropdownMenu');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    document.addEventListener('click', (e) => {
+        const menu = document.getElementById('dropdownMenu');
+        const btn = document.getElementById('menuBtn');
+        if (menu.style.display === 'block' && e.target !== menu && !menu.contains(e.target) && e.target !== btn) {
+            menu.style.display = 'none';
+        }
+    });
 
     // --- DB & IMAGE LOGIC ---
     const dbName = "MTGImageCache";
@@ -157,6 +184,19 @@
         reader.readAsText(file);
     });
 
+    async function loadTestData() {
+        try {
+            // Fetch API vyžaduje HTTP/HTTPS protokol, nefunguje přes file://
+            const response = await fetch('./test_data/test_data.csv');
+            if (!response.ok) throw new Error(`HTTP chyba: ${response.status}`);
+            const text = await response.text();
+            parseCSV(text);
+        } catch (err) {
+            console.error(err);
+            alert('Nepodařilo se načíst testovací data.\n\nPoznámka: Tlačítko funguje pouze pokud aplikace běží na webovém serveru (http/https). Při lokálním otevření (file://) prohlížeč načítání blokuje.\n\nDetaily chyby: ' + err.message);
+        }
+    }
+
     function parseCSV(text) {
         const rows = [];
         let row = []; let field = ""; let inQuotes = false;
@@ -202,9 +242,38 @@
 
     function isPlayerDone(p) { return p.cards.length > 0 && p.cards.every(c => c.current === 0); }
 
+    function deletePlayer(name) {
+        if (confirm(`Opravdu chcete smazat hráče "${name}"?`)) {
+            players = players.filter(p => p.name !== name);
+            if (currentSelectedName === name) {
+                currentSelectedName = null;
+                document.getElementById('deckInfo').innerHTML = "";
+                document.getElementById('searchArea').innerHTML = "";
+                document.getElementById('deckGrid').innerHTML = "";
+            }
+            renderSidebar();
+        }
+    }
+
+    function deleteAllPlayers() {
+        if (confirm('Opravdu chcete smazat všechny hráče a decklisty?')) {
+            players = [];
+            currentSelectedName = null;
+            document.getElementById('deckInfo').innerHTML = "";
+            document.getElementById('searchArea').innerHTML = "";
+            document.getElementById('deckGrid').innerHTML = "";
+            renderSidebar();
+        }
+    }
+
     function renderSidebar() {
         const sb = document.getElementById('sidebar');
         sb.innerHTML = "";
+        if (players.length === 0) {
+            sb.innerHTML = '<div style="padding: 20px; opacity: 0.5; text-align: center;">Nahrajte CSV soubor...</div>';
+            return;
+        }
+
         const pending = players.filter(p => !isPlayerDone(p));
         const completed = players.filter(p => isPlayerDone(p));
 
@@ -212,7 +281,34 @@
             list.forEach(p => {
                 const div = document.createElement('div');
                 div.className = `player-item ${currentSelectedName === p.name ? 'active' : ''} ${isCompleted ? 'is-done' : ''}`;
-                div.innerHTML = `<div><strong>${p.name}</strong><br><small style="opacity:0.7">${p.arch || 'Deck'}</small></div>${isCompleted ? '<span>✅</span>' : ''}`;
+                
+                const info = document.createElement('div');
+                info.innerHTML = `<strong>${p.name}</strong><br><small style="opacity:0.7">${p.arch || 'Deck'}</small>`;
+                
+                const actions = document.createElement('div');
+                actions.style.display = 'flex';
+                actions.style.alignItems = 'center';
+                actions.style.gap = '10px';
+
+                if (isCompleted) {
+                    const check = document.createElement('span');
+                    check.textContent = '✅';
+                    actions.appendChild(check);
+                }
+
+                const delBtn = document.createElement('span');
+                delBtn.innerHTML = '&times;';
+                delBtn.style.color = 'var(--danger-color)';
+                delBtn.style.fontSize = '1.5rem';
+                delBtn.style.fontWeight = 'bold';
+                delBtn.style.cursor = 'pointer';
+                delBtn.onclick = (e) => { e.stopPropagation(); deletePlayer(p.name); };
+                
+                actions.appendChild(delBtn);
+                
+                div.appendChild(info);
+                div.appendChild(actions);
+                
                 div.onclick = () => { currentSelectedName = p.name; renderDeck(); renderSidebar(); };
                 sb.appendChild(div);
             });
