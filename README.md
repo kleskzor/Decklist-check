@@ -24,3 +24,4 @@ Ideas:
 - [ ] on mobile device dont default to search bar while on decklist
 - [x] button for meta
 - [x] refresh persistency
+- [ ] decklist validation
