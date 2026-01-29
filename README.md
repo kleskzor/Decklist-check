@@ -11,10 +11,16 @@ Ideas:
 - [x] counter for total, checked, and remaining cards
 - [ ] adjustable number of cards per row, scale 4-12 maybe?, default 6
 - [x] local image database
-- [ ] add player individually with decklist from modal
-- [ ] edit decklist
+- [x] add player individually with decklist from modal, if existing overwrite after confirmation
+- [x] edit decklist
 - [x] delete player (with confirmation)
 - [x] delete tournament (with confirmation)
 - [ ] export to mtgtop8
-- [ ] search by player name
+- [x] search by player name
 - [ ] change archetype text
+- [x] place scripts and logic to a different file
+- [ ] add languages selection cz/en/fr
+- [x] option to save current tournament to a file
+- [ ] on mobile device dont default to search bar while on decklist
+- [x] button for meta
+- [x] refresh persistency
