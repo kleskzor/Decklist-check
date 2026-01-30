@@ -79,6 +79,215 @@ async function getSmartImage(cardName, imgElement, placeholderElement) {
     };
 }
 
+async function getCardImageUrl(cardName) {
+    const db = await initDB();
+    const tx = db.transaction(storeName, "readonly");
+    const store = tx.objectStore(storeName);
+    const getReq = store.get(cardName);
+
+    return new Promise((resolve) => {
+        getReq.onsuccess = async () => {
+            if (getReq.result) {
+                resolve(URL.createObjectURL(getReq.result));
+            } else {
+                await delay(100); 
+                const scryfallUrl = `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(cardName)}&format=image&version=normal`;
+                try {
+                    const response = await fetch(scryfallUrl);
+                    if (!response.ok) throw new Error("Scryfall limit");
+                    const blob = await response.blob();
+                    const saveTx = db.transaction(storeName, "readwrite");
+                    saveTx.objectStore(storeName).put(blob, cardName);
+                    resolve(URL.createObjectURL(blob));
+                } catch (err) {
+                    resolve(scryfallUrl);
+                }
+            }
+        };
+        getReq.onerror = () => resolve(null);
+    });
+}
+
+// --- CARD VALIDATION DB ---
+const cardDbName = "MTGCardDB";
+const cardStoreName = "validCards";
+
+function initCardDB() {
+    return new Promise((resolve) => {
+        const request = indexedDB.open(cardDbName, 1);
+        request.onupgradeneeded = (e) => {
+            if (!e.target.result.objectStoreNames.contains(cardStoreName)) {
+                e.target.result.createObjectStore(cardStoreName, { keyPath: "name" });
+            }
+        };
+        request.onsuccess = (e) => resolve(e.target.result);
+    });
+}
+
+async function checkCardsInScryfall(cardNames) {
+    const db = await initCardDB();
+    
+    // 1. Check local DB
+    const unknownCards = [];
+    const tx = db.transaction(cardStoreName, "readonly");
+    const store = tx.objectStore(cardStoreName);
+    
+    await Promise.all(cardNames.map(name => new Promise(resolve => {
+        const req = store.get(name);
+        req.onsuccess = () => {
+            if (!req.result) unknownCards.push(name);
+            resolve();
+        };
+    })));
+
+    if (unknownCards.length === 0) return { valid: true, invalidNames: [] };
+
+    // 2. Check Scryfall (Batching max 75)
+    const invalidNames = [];
+    const batches = [];
+    while (unknownCards.length > 0) batches.push(unknownCards.splice(0, 75));
+
+    const saveTx = db.transaction(cardStoreName, "readwrite");
+    const saveStore = saveTx.objectStore(cardStoreName);
+
+    for (const batch of batches) {
+        const body = { identifiers: batch.map(name => ({ name })) };
+        const resp = await fetch("https://api.scryfall.com/cards/collection", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
+        const data = await resp.json();
+        
+        if (data.not_found && data.not_found.length > 0) {
+            data.not_found.forEach(nf => invalidNames.push(nf.name));
+        }
+        
+        if (data.data) {
+            data.data.forEach(card => {
+                // Uložíme nalezené jméno (Scryfall vrací kanonické jméno, ale uložíme to, co jsme hledali, pokud to sedí)
+                // Pro zjednodušení uložíme jméno karty tak, jak ji vrátil Scryfall, ale klíč musí být to, co hledáme, 
+                // nebo prostě uložíme batch inputy, které NEJSOU v not_found.
+                // Zde: Uložíme všechny z batche, které nejsou v invalidNames.
+            });
+        }
+    }
+    
+    // Uložíme validní karty do DB
+    // Musíme vědět, které z původního batche byly validní.
+    // Jednodušší: Projdeme původní batch, pokud není v invalidNames, uložíme.
+    for (const batch of batches) { // Batches jsou už prázdné kvůli splice, musíme si je pamatovat? 
+        // Oprava logiky výše: splice modifikuje pole.
+    }
+    
+    // Re-implementace smyčky pro správné uložení
+    return { valid: invalidNames.length === 0, invalidNames };
+}
+
+// Opravená funkce pro validaci s DB zápisem
+async function validateCardsBatch(names, onProgress) {
+    const db = await initCardDB();
+    const unknown = [];
+    
+    // Check DB
+    const tx = db.transaction(cardStoreName, "readonly");
+    const store = tx.objectStore(cardStoreName);
+    
+    await Promise.all(names.map(n => new Promise(r => {
+        const req = store.get(n);
+        req.onsuccess = () => { if (!req.result) unknown.push(n); r(); };
+    })));
+
+    if (unknown.length === 0) return [];
+
+    const invalid = [];
+    const batches = [];
+    const tempUnknown = [...unknown];
+    while (tempUnknown.length > 0) batches.push(tempUnknown.splice(0, 75));
+    const totalBatches = batches.length;
+
+    for (let i = 0; i < totalBatches; i++) {
+        const batch = batches[i];
+        try {
+            const resp = await fetch("https://api.scryfall.com/cards/collection", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ identifiers: batch.map(name => ({ name })) })
+            });
+            const data = await resp.json();
+            
+            let notFoundNames = (data.not_found || []).map(nf => nf.name);
+
+            // RETRY LOGIKA PRO SPLIT KARTY
+            // Pokud se karta s "//" nenašla, zkusíme hledat jen přední stranu
+            const splitRetries = notFoundNames.filter(n => n.includes(' // '));
+            if (splitRetries.length > 0) {
+                const retryMap = {}; // frontFace -> originalName
+                const retryBatch = splitRetries.map(n => {
+                    const front = n.split(' // ')[0];
+                    retryMap[front] = n;
+                    return { name: front };
+                });
+
+                try {
+                    const retryResp = await fetch("https://api.scryfall.com/cards/collection", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ identifiers: retryBatch })
+                    });
+                    const retryData = await retryResp.json();
+
+                    // Pokud se přední strana našla, považujeme původní název za validní
+                    const saveTx = db.transaction(cardStoreName, "readwrite");
+                    const saveStore = saveTx.objectStore(cardStoreName);
+
+                    retryBatch.forEach(input => {
+                        const frontName = input.name;
+                        const originalName = retryMap[frontName];
+                        
+                        // Pokud NENÍ v not_found u retry requestu, tak se našla
+                        const isStillMissing = retryData.not_found && retryData.not_found.some(nf => nf.name === frontName);
+                        
+                        if (!isStillMissing) {
+                            // Našlo se! Odstraníme z notFoundNames a uložíme originál do DB
+                            notFoundNames = notFoundNames.filter(n => n !== originalName);
+                            saveStore.put({ name: originalName, timestamp: Date.now() });
+                        }
+                    });
+                } catch (e) {
+                    console.warn("Retry failed for split cards", e);
+                }
+            }
+
+            notFoundNames.forEach(n => invalid.push(n));
+
+            // Uložit validní
+            const saveTx = db.transaction(cardStoreName, "readwrite");
+            const saveStore = saveTx.objectStore(cardStoreName);
+            batch.forEach(name => {
+                // Pokud karta nebyla v původním not_found (nebo byla zachráněna v retry), je validní
+                // Pozor: musíme zkontrolovat aktuální notFoundNames, protože retry mohlo některé odstranit
+                const isMissing = notFoundNames.includes(name);
+                if (!isMissing) {
+                    saveStore.put({ name: name, timestamp: Date.now() });
+                }
+            });
+        } catch (e) {
+            console.error("Validation error", e);
+            // V případě chyby sítě raději neoznačíme jako invalid, ale vyhodíme alert v UI
+            throw e;
+        }
+
+        if (onProgress) onProgress(i + 1, totalBatches);
+    }
+    return invalid;
+}
+
+function normalizeCardName(name) {
+    // Nahradí jedno nebo více lomítek (s volitelnými mezerami) za " // "
+    return name.trim().replace(/\s*\/+\s*/g, ' // ');
+}
+
 // --- CSV PARSING ---
 document.getElementById('fileInput').addEventListener('change', e => {
     const file = e.target.files[0];
@@ -101,7 +310,94 @@ async function loadTestData() {
     }
 }
 
-function parseCSV(text) {
+async function validateCSVAndImport() {
+    const candidates = window.csvCandidates;
+    if (!candidates) return;
+
+    // Progress Bar UI
+    const loadingDiv = document.createElement('div');
+    loadingDiv.id = 'csvLoading';
+    loadingDiv.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); color:white; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:20000; font-family:sans-serif;";
+    loadingDiv.innerHTML = `
+        <div style="font-size: 1.5rem; margin-bottom: 20px;">Ověřuji karty a decklisty...</div>
+        <div style="width: 300px; height: 20px; background: #444; border-radius: 10px; overflow: hidden;">
+            <div id="csvProgressBar" style="width: 0%; height: 100%; background: var(--success-color); transition: width 0.3s;"></div>
+        </div>
+        <div id="csvProgressText" style="margin-top: 10px; color: #ccc;">0%</div>
+    `;
+    document.body.appendChild(loadingDiv);
+
+    const updateProgress = (percent, text) => {
+        document.getElementById('csvProgressBar').style.width = `${percent}%`;
+        document.getElementById('csvProgressText').textContent = text || `${Math.round(percent)}%`;
+    };
+
+    try {
+        // 1. Collect all card names
+        const allNames = new Set();
+        candidates.forEach(p => {
+            p.cards.forEach(c => allNames.add(c.name));
+            if (p.arch) {
+                const parts = p.arch.split(/[&+/]/).map(s => s.trim()).filter(s => s);
+                parts.forEach(n => allNames.add(normalizeCardName(n)));
+            }
+        });
+
+        // 2. Validate names
+        const invalidCards = await validateCardsBatch(Array.from(allNames), (curr, total) => {
+            const pct = (curr / total) * 100;
+            updateProgress(pct, `Ověřuji karty: ${curr} / ${total} dávek`);
+        });
+
+        // 3. Validate counts and map errors to players
+        candidates.forEach(p => {
+            p.validationErrors = [];
+            
+            // Check counts
+            const deckCount = p.cards.reduce((sum, c) => sum + c.count, 0);
+            let commanderCount = 0;
+            if (p.arch) {
+                commanderCount = p.arch.split(/[&+/]/).filter(s => s.trim()).length;
+            }
+            const hasCompanion = p.arch && p.arch.includes('+');
+            const target = hasCompanion ? 101 : 100;
+            if (deckCount + commanderCount !== target) {
+                p.validationErrors.push(`Nesprávný počet karet: ${deckCount + commanderCount} (očekáváno ${target})`);
+            }
+
+            // Check invalid cards
+            const playerInvalidCards = p.cards.filter(c => invalidCards.includes(c.name)).map(c => c.name);
+            if (playerInvalidCards.length > 0) {
+                p.validationErrors.push(`Neznámé karty: ${playerInvalidCards.join(', ')}`);
+            }
+        });
+
+        if (document.getElementById('csvLoading')) document.body.removeChild(document.getElementById('csvLoading'));
+
+        // 4. Import
+        players = candidates;
+        players.sort((a, b) => a.name.localeCompare(b.name));
+        saveState();
+        renderSidebar();
+        window.csvImportActive = false;
+        window.csvCandidates = null;
+        alert("Import úspěšný!");
+
+    } catch (e) {
+        if (document.getElementById('csvLoading')) document.body.removeChild(document.getElementById('csvLoading'));
+        console.error(e);
+        
+        // Fallback: Load anyway on crash, but warn
+        players = candidates;
+        saveState();
+        renderSidebar();
+        window.csvImportActive = false;
+        window.csvCandidates = null;
+        alert("Chyba při validaci (importováno bez ověření): " + e.message);
+    }
+}
+
+async function parseCSV(text) {
     const rows = [];
     let row = []; let field = ""; let inQuotes = false;
     for (let i = 0; i < text.length; i++) {
@@ -126,17 +422,17 @@ function parseCSV(text) {
     const archIdx = header.indexOf('archetype');
     const checkedIdx = header.indexOf('is_checked');
 
-    players = rows.slice(1).map(r => {
+    const candidates = rows.slice(1).map(r => {
         const name = `${r[fIdx]} ${r[lIdx]}`.trim();
         const list = r[listIdx] || "";
-        let arch = r[archIdx] || "";
+        let arch = (r[archIdx] || "").replace(/\//g, ' & ');
         let cards = [];
         list.split('\n').forEach(line => {
             const lineTrim = line.trim();
             if (!lineTrim || lineTrim.includes("SIDEBOARD:")) return;
             const match = lineTrim.match(/^(\d+)\s+(.+)$/);
-            if (match) cards.push({ count: parseInt(match[1]), current: parseInt(match[1]), name: match[2] });
-            else cards.push({ count: 1, current: 1, name: lineTrim });
+            if (match) cards.push({ count: parseInt(match[1]), current: parseInt(match[1]), name: normalizeCardName(match[2]) });
+            else cards.push({ count: 1, current: 1, name: normalizeCardName(lineTrim) });
         });
         cards.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -149,9 +445,10 @@ function parseCSV(text) {
 
         return { name, arch, cards };
     }).filter(p => p.name);
-    players.sort((a, b) => a.name.localeCompare(b.name));
-    saveState();
-    renderSidebar();
+    
+    window.csvCandidates = candidates;
+    window.csvImportActive = true;
+    await validateCSVAndImport();
 }
 
 function isPlayerDone(p) { return p.cards.length > 0 && p.cards.every(c => c.current === 0); }
@@ -217,6 +514,11 @@ function renderSidebar() {
             const div = document.createElement('div');
             div.className = `player-item ${currentSelectedName === p.name ? 'active' : ''} ${isCompleted ? 'is-done' : ''}`;
             
+            if (p.validationErrors && p.validationErrors.length > 0) {
+                div.style.background = "rgba(255, 82, 82, 0.2)";
+                div.title = "Chyby v decklistu:\n" + p.validationErrors.join("\n");
+            }
+
             const info = document.createElement('div');
             info.innerHTML = `<strong>${p.name}</strong><br><small style="opacity:0.7">${p.arch || 'Deck'}</small>`;
             
@@ -276,22 +578,51 @@ function renderDeck() {
             <div class="stat-item" style="color: ${remaining > 0 ? 'orange' : 'var(--success-color)'}"><span class="stat-value">${remaining}</span><span class="stat-label">Zbývá</span></div>
         </div>` : '';
 
+    let verifyBtn = "";
+    if (!isEditMode && p.validationErrors && p.validationErrors.length > 0) {
+        verifyBtn = `<button class="btn-ctrl" style="background-color: var(--success-color); color: white;" onclick="verifyDeckErrors()">Deck verified</button>`;
+    }
+
     const buttonsHtml = isEditMode 
         ? `<button class="btn-check-all" onclick="toggleEditMode()">Uložit Deck</button>`
-        : `<button class="btn-ctrl" onclick="toggleEditMode()">Upravit</button>
+        : `${verifyBtn}
+           <button class="btn-ctrl" style="background-color: yellow; color: black; font-weight: bold;" onclick="toggleEditMode()">Upravit</button>
            <button class="btn-check-all" onclick="checkAllCards()">Ověřit vše</button>
            <button class="btn-reset" onclick="resetDeck()">Reset</button>`;
 
+    const archHtml = p.arch ? p.arch.split(/([&+/])/).map(part => {
+        const trimmed = part.trim();
+        if (trimmed === '/') return ' & ';
+        if (!trimmed || ['&', '+'].includes(trimmed)) return part;
+        return `<span class="commander-name" data-name="${trimmed}" style="cursor:help; border-bottom:1px dotted #888;">${part}</span>`;
+    }).join('') : "";
+
     info.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 25px; gap: 20px; flex-wrap: wrap;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; gap: 20px; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 200px;">
                 <h1 style="margin:0; font-size: 1.8rem;">${p.name}</h1>
-                <div style="font-size:1rem; color:var(--accent-color);">${p.arch}</div>
+                <div style="font-size:1rem; font-weight:bold; color:#fff;">${archHtml}</div>
             </div>
-            ${statsHtml}
-            <div style="display:flex; gap: 8px;">${buttonsHtml}</div>
+            <div style="display:flex; align-items:center; gap: 20px; flex-wrap: wrap; justify-content: flex-end;">
+                ${statsHtml}
+                <div style="display:flex; gap: 8px;">${buttonsHtml}</div>
+            </div>
         </div>
     `;
+
+    info.querySelectorAll('.commander-name').forEach(span => {
+        span.addEventListener('mouseenter', async (e) => {
+            span._isHovering = true;
+            const name = span.getAttribute('data-name');
+            const src = await getCardImageUrl(name);
+            if (span._isHovering && src) window.showCardPreview(e, src);
+        });
+        span.addEventListener('mousemove', (e) => window.moveCardPreview(e));
+        span.addEventListener('mouseleave', () => {
+            span._isHovering = false;
+            window.hideCardPreview();
+        });
+    });
 
     const placeholder = isEditMode ? "Přidat kartu (Scryfall)..." : "Hledat kartu...";
     searchArea.innerHTML = `<div class="search-container"><input type="text" id="cardSearch" placeholder="${placeholder}" autocomplete="off"><div id="autocompleteResults" class="autocomplete-results"></div></div>`;
@@ -462,6 +793,16 @@ window.checkAllCards = () => {
     renderDeck(); renderSidebar();
 };
 
+window.verifyDeckErrors = () => {
+    const p = players.find(p => p.name === currentSelectedName);
+    if (p) {
+        p.validationErrors = [];
+        saveState();
+        renderDeck();
+        renderSidebar();
+    }
+};
+
 window.toggleEditMode = () => {
     isEditMode = !isEditMode;
     renderDeck();
@@ -482,12 +823,13 @@ window.editCardCount = (idx, delta) => {
 
 window.addCardToDeck = (cardName) => {
     const p = players.find(p => p.name === currentSelectedName);
-    const existing = p.cards.find(c => c.name === cardName);
+    const normName = normalizeCardName(cardName);
+    const existing = p.cards.find(c => c.name === normName);
     if (existing) {
         existing.count++;
         existing.current = existing.count;
     } else {
-        p.cards.push({ count: 1, current: 1, name: cardName });
+        p.cards.push({ count: 1, current: 1, name: normName });
         p.cards.sort((a, b) => a.name.localeCompare(b.name));
     }
     saveState();
@@ -499,10 +841,243 @@ window.addCardToDeck = (cardName) => {
     }
 };
 
+window.showErrorModal = (title, messages) => {
+    let modal = document.getElementById('errorModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'errorModal';
+        modal.style.cssText = "display:none; position:fixed; z-index:10001; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.8);";
+        modal.innerHTML = `
+            <div style="background-color:#222; margin:10% auto; padding:20px; border:1px solid #888; width:80%; max-width:500px; border-radius:8px; position:relative;">
+                <span style="position:absolute; top:10px; right:20px; font-size:28px; cursor:pointer;" onclick="document.getElementById('errorModal').style.display='none'">&times;</span>
+                <h2 id="errTitle" style="color:var(--danger-color); margin-top:0;"></h2>
+                <div id="errContent" style="margin-top:15px; max-height:300px; overflow-y:auto;"></div>
+                <div style="margin-top:20px; text-align:right;">
+                    <button class="btn-ctrl" onclick="document.getElementById('errorModal').style.display='none'">OK</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    
+    document.getElementById('errTitle').textContent = title;
+    const content = document.getElementById('errContent');
+    content.innerHTML = "";
+    if (Array.isArray(messages)) {
+        messages.forEach(m => content.innerHTML += `<div style="margin-bottom:5px;">• ${m}</div>`);
+    } else {
+        content.textContent = messages;
+    }
+    modal.style.display = "block";
+};
+
 // --- MODAL LOGIC ---
 window.openAddModal = () => {
-    document.getElementById('addDeckModal').style.display = "block";
+    const modal = document.getElementById('addDeckModal');
+    const decklistArea = document.getElementById('newDecklist');
+
+    // Dynamické přidání Moxfield importu, pokud neexistuje
+    if (!document.getElementById('moxfieldInputContainer')) {
+        const container = document.createElement('div');
+        container.id = 'moxfieldInputContainer';
+        container.style.cssText = "display: flex; gap: 10px; margin-bottom: 15px; align-items: center;";
+
+        const input = document.createElement('input');
+        input.id = 'moxfieldUrl';
+        input.type = 'text';
+        input.placeholder = 'Export z Moxfield.com (URL)...';
+        input.style.flex = "1";
+        input.style.padding = "8px";
+        input.style.borderRadius = "4px";
+        input.style.border = "1px solid #444";
+        input.style.background = "#222";
+        input.style.color = "#fff";
+
+        const btn = document.createElement('button');
+        btn.textContent = 'Import';
+        btn.className = 'btn-ctrl';
+        btn.style.padding = "8px 15px";
+        btn.style.cursor = "pointer";
+
+        btn.onclick = async (e) => {
+            e.preventDefault();
+            const url = input.value.trim();
+            if (!url) return;
+
+            const match = url.match(/moxfield\.com\/decks\/([a-zA-Z0-9\-_]+)/);
+            if (!match) {
+                alert("Neplatná Moxfield URL.");
+                return;
+            }
+
+            const originalText = btn.textContent;
+            btn.textContent = "⏳";
+            btn.disabled = true;
+
+            try {
+                // Použití CORS proxy pro obejití omezení prohlížeče
+                const targetUrl = `https://api.moxfield.com/v2/decks/all/${match[1]}`;
+                const resp = await fetch(`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`);
+                if (!resp.ok) throw new Error("Chyba API: " + resp.status);
+                const data = await resp.json();
+
+                const commanders = Object.keys(data.commanders || {});
+                const companions = Object.keys(data.companions || {});
+                
+                let archStr = commanders.join(" & ");
+                if (companions.length > 0) {
+                    archStr += (archStr ? " + " : "") + companions.join(" & ");
+                }
+                
+                if (archStr) {
+                    document.getElementById('newPlayerArchetype').value = archStr;
+                }
+
+                let text = "";
+                // Mainboard
+                for (const [name, info] of Object.entries(data.mainboard || {})) {
+                    text += `${info.quantity} ${name}\n`;
+                }
+                // Sideboard
+                if (data.sideboard && Object.keys(data.sideboard).length > 0) {
+                    let sbText = "";
+                    for (const [name, info] of Object.entries(data.sideboard)) {
+                        if (companions.includes(name)) continue;
+                        sbText += `${info.quantity} ${name}\n`;
+                    }
+                    if (sbText) {
+                        text += "SIDEBOARD:\n" + sbText;
+                    }
+                }
+
+                document.getElementById('newDecklist').value = text;
+                input.value = "";
+                document.getElementById('newDecklist').dispatchEvent(new Event('input'));
+            } catch (err) {
+                console.error(err);
+                alert("Chyba při importu z Moxfield: " + err.message);
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        };
+
+        container.appendChild(input);
+        container.appendChild(btn);
+
+        if (decklistArea) {
+            decklistArea.parentNode.insertBefore(container, decklistArea);
+        }
+    }
+
+    // Dynamické přidání počítadla karet
+    if (!document.getElementById('addDeckStats')) {
+        const statsContainer = document.createElement('div');
+        statsContainer.id = 'addDeckStats';
+        statsContainer.className = 'stats-bar';
+        
+        statsContainer.innerHTML = `
+            <div class="stat-item">
+                <span class="stat-value" id="addDeckTotal">0</span>
+                <span class="stat-label">Karet</span>
+            </div>
+            <div id="addDeckCheck" style="display:none; font-size: 1.5rem;">✅</div>
+        `;
+
+        const header = modal.querySelector('h2');
+        // Zkusíme najít zavírací tlačítko (třída .close, .close-modal nebo obsahující ×)
+        let closeBtn = modal.querySelector('.close, .close-modal');
+        if (!closeBtn) {
+            const spans = modal.getElementsByTagName('span');
+            for (let s of spans) {
+                if (s.innerHTML.includes('&times;') || s.textContent.includes('×')) {
+                    closeBtn = s;
+                    break;
+                }
+            }
+        }
+
+        if (header) {
+            header.style.display = "flex";
+            header.style.alignItems = "center";
+            header.style.justifyContent = "flex-start";
+            header.style.flexWrap = "nowrap";
+            header.style.margin = "0 0 15px 0";
+
+            statsContainer.style.cssText = "display: flex; gap: 15px; align-items: center; font-size: 1rem; font-weight: normal; margin-left: auto;";
+            header.appendChild(statsContainer);
+
+            if (closeBtn) {
+                closeBtn.style.cssText = "float: none; position: static; margin-left: 15px; cursor: pointer; font-size: 28px; line-height: 1; display: block; width: auto; height: auto;";
+                header.appendChild(closeBtn);
+            }
+        } else if (decklistArea) {
+            statsContainer.style.cssText = "display: flex; gap: 15px; margin-bottom: 10px; align-items: center; justify-content: flex-end;";
+            decklistArea.parentNode.insertBefore(statsContainer, decklistArea);
+        }
+
+        const updateStats = () => {
+            const listText = decklistArea.value;
+            const archText = document.getElementById('newPlayerArchetype').value;
+            
+            let cardCount = 0;
+            listText.split('\n').forEach(line => {
+                const lineTrim = line.trim();
+                if (!lineTrim || lineTrim.includes("SIDEBOARD:")) return;
+                const match = lineTrim.match(/^(\d+)\s+(.+)$/);
+                if (match) {
+                    cardCount += parseInt(match[1]);
+                } else if (lineTrim) {
+                    cardCount += 1;
+                }
+            });
+
+            let commanderCount = 0;
+            if (archText.trim()) {
+                commanderCount = archText.split(/[&+/]/).length;
+            }
+
+            const total = cardCount + commanderCount;
+            const totalEl = document.getElementById('addDeckTotal');
+            const checkEl = document.getElementById('addDeckCheck');
+            
+            if (totalEl) {
+                totalEl.textContent = total;
+                totalEl.style.color = total === 100 ? "var(--success-color)" : "";
+            }
+            
+            if (checkEl) {
+                checkEl.style.display = total === 100 ? "block" : "none";
+            }
+        };
+
+        decklistArea.addEventListener('input', updateStats);
+        document.getElementById('newPlayerArchetype').addEventListener('input', updateStats);
+    }
+
+    modal.style.display = "block";
     document.getElementById('newPlayerName').focus();
+    
+    // Aktualizace počítadla při otevření
+    if (document.getElementById('addDeckStats')) {
+        document.getElementById('newDecklist').dispatchEvent(new Event('input'));
+    }
+
+    // Nastavení tlačítka na Validaci
+    const saveBtn = document.querySelector('button[onclick="saveNewPlayer()"]');
+    if (saveBtn) {
+        saveBtn.textContent = "Ověřit decklist";
+        saveBtn.onclick = window.validateDeck;
+        saveBtn.classList.remove('btn-success'); // Pokud existuje styl pro úspěch
+        
+        // Pokud uživatel něco změní, resetujeme tlačítko zpět na validaci
+        const resetBtn = () => {
+            saveBtn.textContent = "Ověřit decklist";
+            saveBtn.onclick = window.validateDeck;
+        };
+        document.getElementById('newDecklist').addEventListener('input', resetBtn, { once: true });
+        document.getElementById('newPlayerArchetype').addEventListener('input', resetBtn, { once: true });
+    }
 };
 
 window.closeAddModal = () => {
@@ -515,9 +1090,287 @@ window.addEventListener('click', (event) => {
     }
 });
 
+window.validateDeck = async () => {
+    const btn = document.querySelector('button[onclick="saveNewPlayer()"]') || document.activeElement;
+    const originalText = btn.textContent;
+    btn.textContent = "Ověřuji...";
+    btn.disabled = true;
+
+    try {
+        const arch = document.getElementById('newPlayerArchetype').value.trim();
+        const listText = document.getElementById('newDecklist').value;
+        
+        // 1. Kontrola počtu karet
+        let cardCount = 0;
+        const cardNames = [];
+        
+        listText.split('\n').forEach(line => {
+            const lineTrim = line.trim();
+            if (!lineTrim || lineTrim.includes("SIDEBOARD:")) return;
+            const match = lineTrim.match(/^(\d+)\s+(.+)$/);
+            if (match) {
+                cardCount += parseInt(match[1]);
+                cardNames.push(normalizeCardName(match[2]));
+            } else if (lineTrim) {
+                cardCount += 1;
+                cardNames.push(normalizeCardName(lineTrim));
+            }
+        });
+
+        let commanderCount = 0;
+        if (arch) {
+            const parts = arch.split(/[&+/]/).map(s => s.trim()).filter(s => s);
+            commanderCount = parts.length;
+            parts.forEach(p => cardNames.push(normalizeCardName(p)));
+        }
+
+        const hasCompanion = arch.includes('+');
+        const targetTotal = hasCompanion ? 101 : 100;
+        const currentTotal = cardCount + commanderCount;
+
+        if (currentTotal !== targetTotal) {
+            throw new Error(`Nesprávný počet karet! <br>Současný počet: <b>${currentTotal}</b><br>Požadovaný počet: <b>${targetTotal}</b> ${hasCompanion ? '(včetně Companion)' : ''}`);
+        }
+
+        // 2. Kontrola jmen karet (Scryfall)
+        const invalidCards = await validateCardsBatch(cardNames);
+        if (invalidCards.length > 0) {
+            window.resolveUnknownCards(invalidCards);
+            return;
+        }
+
+        // Vše OK
+        btn.textContent = "Uložit";
+        btn.onclick = window.saveNewPlayer;
+    } catch (e) {
+        window.showErrorModal("Chyba validace", e.message.startsWith("Nesprávný") ? e.message : [e.message]);
+    } finally {
+        if (btn.textContent !== "Uložit") btn.textContent = originalText;
+        btn.disabled = false;
+    }
+};
+
+window.resolveUnknownCards = async (invalidCards) => {
+    let modal = document.getElementById('resolveModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'resolveModal';
+        modal.style.cssText = "display:none; position:fixed; z-index:10002; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.9);";
+        modal.innerHTML = `
+            <div style="background-color:#222; margin:5% auto; padding:20px; border:1px solid #888; width:90%; max-width:600px; border-radius:8px; position:relative; max-height: 90vh; display: flex; flex-direction: column;">
+                <h2 style="color:var(--warning-color); margin-top:0;">Neznámé karty</h2>
+                <div style="margin-bottom: 15px; color: #ccc;">Následující karty nebyly nalezeny. Vyberte správnou variantu nebo ponechte původní.</div>
+                <div id="resolveContent" style="flex: 1; overflow-y:auto; margin-bottom: 20px; padding-right: 5px;"></div>
+                <div style="text-align:right; border-top: 1px solid #444; padding-top: 15px;">
+                    <button class="btn-ctrl" onclick="document.getElementById('resolveModal').style.display='none'">Zrušit</button>
+                    <button class="btn-ctrl btn-success" onclick="applyCardResolutions()">Použít opravy</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    const content = document.getElementById('resolveContent');
+    content.innerHTML = '<div style="text-align:center; padding:20px;">Načítám návrhy...</div>';
+    modal.style.display = "block";
+
+    const suggestionsMap = {};
+    
+    await Promise.all(invalidCards.map(async (name) => {
+        try {
+            let suggestions = [];
+            
+            // 1. Zkusíme přesný název
+            let resp = await fetch(`https://api.scryfall.com/cards/autocomplete?q=${encodeURIComponent(name)}`);
+            if (resp.ok) {
+                const json = await resp.json();
+                suggestions = json.data || [];
+            }
+
+            // 2. Pokud nic a obsahuje //, zkusíme první část (pro split karty)
+            if (suggestions.length === 0 && name.includes('//')) {
+                const part = name.split('//')[0].trim();
+                resp = await fetch(`https://api.scryfall.com/cards/autocomplete?q=${encodeURIComponent(part)}`);
+                if (resp.ok) {
+                    const json = await resp.json();
+                    suggestions = json.data || [];
+                }
+            }
+
+            // 3. Fallback: Zkusíme bez posledního slova
+            if (suggestions.length === 0 && name.includes(' ')) {
+                const withoutLastWord = name.substring(0, name.lastIndexOf(' ')).trim();
+                if (withoutLastWord.length > 2) {
+                    resp = await fetch(`https://api.scryfall.com/cards/autocomplete?q=${encodeURIComponent(withoutLastWord)}`);
+                    if (resp.ok) {
+                        const json = await resp.json();
+                        suggestions = json.data || [];
+                    }
+                }
+            }
+
+            // 4. Fallback: Zkusíme bez posledních 1-2 znaků
+            if (suggestions.length === 0 && name.length > 4) {
+                for (let i = 1; i <= 2; i++) {
+                    resp = await fetch(`https://api.scryfall.com/cards/autocomplete?q=${encodeURIComponent(name.slice(0, -i))}`);
+                    if (resp.ok) {
+                        const json = await resp.json();
+                        suggestions = json.data || [];
+                        if (suggestions.length > 0) break;
+                    }
+                }
+            }
+
+            // 5. Fallback: Pokud stále nic, zkusíme první slovo (pokud je dost dlouhé)
+            if (suggestions.length === 0) {
+                const firstWord = name.split(/[\s/]+/)[0];
+                if (firstWord && firstWord.length > 3 && firstWord !== name) {
+                    resp = await fetch(`https://api.scryfall.com/cards/autocomplete?q=${encodeURIComponent(firstWord)}`);
+                    if (resp.ok) {
+                        const json = await resp.json();
+                        suggestions = json.data || [];
+                    }
+                }
+            }
+
+            suggestionsMap[name] = suggestions;
+        } catch (e) {
+            suggestionsMap[name] = [];
+        }
+    }));
+
+    content.innerHTML = "";
+    invalidCards.forEach((name, index) => {
+        const row = document.createElement('div');
+        row.style.cssText = "margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #333;";
+        
+        const label = document.createElement('div');
+        label.innerHTML = `Původní název: <strong style="color: #ff5252">${name}</strong>`;
+        row.appendChild(label);
+
+        const select = document.createElement('select');
+        select.id = `resolve-select-${index}`;
+        select.dataset.original = name;
+        select.style.cssText = "width: 100%; padding: 8px; margin-top: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;";
+        
+        const keepOpt = document.createElement('option');
+        keepOpt.value = name;
+        keepOpt.textContent = `Ponechat: "${name}"`;
+        select.appendChild(keepOpt);
+
+        (suggestionsMap[name] || []).forEach(sugg => {
+            if (sugg !== name) {
+                const opt = document.createElement('option');
+                opt.value = sugg;
+                opt.textContent = `Opravit na: "${sugg}"`;
+                select.appendChild(opt);
+            }
+        });
+
+        row.appendChild(select);
+        content.appendChild(row);
+    });
+};
+
+window.applyCardResolutions = async () => {
+    const selects = document.querySelectorAll('#resolveContent select');
+    let decklistVal = document.getElementById('newDecklist').value;
+    let archetypeVal = document.getElementById('newPlayerArchetype').value;
+    let modified = false;
+    
+    // 1. Uložíme všechna rozhodnutí (i "Ponechat") do DB jako validní karty
+    try {
+        const db = await initCardDB();
+        const tx = db.transaction(cardStoreName, "readwrite");
+        const store = tx.objectStore(cardStoreName);
+        
+        await Promise.all(Array.from(selects).map(sel => {
+            return new Promise(resolve => {
+                const req = store.put({ name: sel.value, timestamp: Date.now() });
+                req.onsuccess = resolve;
+                req.onerror = resolve;
+            });
+        }));
+    } catch (e) { console.error("DB Error", e); }
+
+    // 2. Aplikujeme změny v textu
+    if (window.csvImportActive) {
+        const selects = document.querySelectorAll('#resolveContent select');
+        selects.forEach(sel => {
+            const original = sel.dataset.original;
+            const selected = sel.value;
+            
+            if (original !== selected) {
+                window.csvCandidates.forEach(p => {
+                    p.cards.forEach(c => {
+                        if (c.name === original) c.name = selected;
+                    });
+                    if (p.arch) {
+                        const parts = p.arch.split(/([&+/])/);
+                        p.arch = parts.map(part => {
+                            const trimmed = part.trim();
+                            if (!trimmed || ['&', '+', '/'].includes(trimmed)) return part;
+                            if (normalizeCardName(trimmed) === original) {
+                                return part.replace(trimmed, selected); 
+                            }
+                            return part;
+                        }).join('');
+                    }
+                });
+            }
+        });
+        
+        document.getElementById('resolveModal').style.display = 'none';
+        await validateCSVAndImport();
+        return;
+    }
+
+    selects.forEach(sel => {
+        const original = sel.dataset.original;
+        const selected = sel.value;
+        
+        if (original !== selected) {
+            modified = true;
+            const lines = decklistVal.split('\n');
+            const newLines = lines.map(line => {
+                const lineTrim = line.trim();
+                if (!lineTrim || lineTrim.includes("SIDEBOARD:")) return line;
+                const match = lineTrim.match(/^(\d+)\s+(.+)$/);
+                if (match) {
+                    if (normalizeCardName(match[2]) === original) return `${match[1]} ${selected}`;
+                } else {
+                    if (normalizeCardName(lineTrim) === original) return selected;
+                }
+                return line;
+            });
+            decklistVal = newLines.join('\n');
+
+            if (archetypeVal) {
+                const parts = archetypeVal.split(/([&+/])/);
+                const newParts = parts.map(p => {
+                    const trimmed = p.trim();
+                    if (!trimmed || ['&', '+', '/'].includes(trimmed)) return p;
+                    if (normalizeCardName(trimmed) === original) return p.replace(trimmed, selected);
+                    return p;
+                });
+                archetypeVal = newParts.join('');
+            }
+        }
+    });
+    
+    if (modified) {
+        document.getElementById('newDecklist').value = decklistVal;
+        document.getElementById('newPlayerArchetype').value = archetypeVal;
+        document.getElementById('newDecklist').dispatchEvent(new Event('input'));
+    }
+    
+    document.getElementById('resolveModal').style.display = 'none';
+    window.validateDeck();
+};
+
 window.saveNewPlayer = () => {
     const name = document.getElementById('newPlayerName').value.trim();
-    const arch = document.getElementById('newPlayerArchetype').value.trim();
+    const arch = document.getElementById('newPlayerArchetype').value.trim().replace(/\//g, ' & ');
     const listText = document.getElementById('newDecklist').value;
 
     if (!name) { alert("Zadejte jméno hráče."); return; }
@@ -531,8 +1384,8 @@ window.saveNewPlayer = () => {
         const lineTrim = line.trim();
         if (!lineTrim || lineTrim.includes("SIDEBOARD:")) return;
         const match = lineTrim.match(/^(\d+)\s+(.+)$/);
-        if (match) cards.push({ count: parseInt(match[1]), current: parseInt(match[1]), name: match[2] });
-        else cards.push({ count: 1, current: 1, name: lineTrim });
+        if (match) cards.push({ count: parseInt(match[1]), current: parseInt(match[1]), name: normalizeCardName(match[2]) });
+        else cards.push({ count: 1, current: 1, name: normalizeCardName(lineTrim) });
     });
     cards.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -646,5 +1499,45 @@ function loadState() {
         } catch (e) { console.error("Failed to load state", e); }
     }
 }
+
+window.showCardPreview = (e, src) => {
+    if (!src || src === "" || src === window.location.href) return;
+    
+    let div = document.getElementById('cardHoverPreview');
+    if (!div) {
+        div = document.createElement('div');
+        div.id = 'cardHoverPreview';
+        div.style.cssText = "position: fixed; display: none; z-index: 9999; pointer-events: none; top: 0; left: 0;";
+        const img = document.createElement('img');
+        img.style.cssText = "max-width: 300px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);";
+        div.appendChild(img);
+        document.body.appendChild(div);
+    }
+    
+    const img = div.querySelector('img');
+    img.src = src;
+    div.style.display = 'block';
+    window.moveCardPreview(e);
+};
+
+window.moveCardPreview = (e) => {
+    const div = document.getElementById('cardHoverPreview');
+    if (!div || div.style.display === 'none') return;
+    
+    const img = div.querySelector('img');
+    let top = e.clientY + 15;
+    let left = e.clientX + 15;
+    
+    if (img && (left + img.offsetWidth > window.innerWidth)) left = e.clientX - img.offsetWidth - 15;
+    if (img && (top + img.offsetHeight > window.innerHeight)) top = e.clientY - img.offsetHeight - 15;
+    
+    div.style.top = `${top}px`;
+    div.style.left = `${left}px`;
+};
+
+window.hideCardPreview = () => {
+    const div = document.getElementById('cardHoverPreview');
+    if (div) div.style.display = 'none';
+};
 
 loadState();

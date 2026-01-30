@@ -1,4 +1,5 @@
-Do not read me
+Fully vibed MTG Commander Deck Checker
+[Changelog](CHANGELOG.md)
 
 Ideas:
 - [x] sort alphabetically (cards and players)
@@ -9,7 +10,6 @@ Ideas:
 - [x] keyboard support
 - [x] one-click deckcheck
 - [x] counter for total, checked, and remaining cards
-- [ ] adjustable number of cards per row, scale 4-12 maybe?, default 6
 - [x] local image database
 - [x] add player individually with decklist from modal, if existing overwrite after confirmation
 - [x] edit decklist
@@ -24,4 +24,8 @@ Ideas:
 - [ ] on mobile device dont default to search bar while on decklist
 - [x] button for meta
 - [x] refresh persistency
-- [ ] decklist validation
+- [x] decklist validation
+- [x] deck import from moxfield
+- [ ] deck import from mtggoldfish
+- [ ] add how to to menu
+- [ ] tournament management

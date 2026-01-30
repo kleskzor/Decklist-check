@@ -20,6 +20,19 @@
   - Toggleable interface for modifying card counts.
   - Ability to add new cards dynamically using the search bar.
   - "Reset" functionality to restore deck to its original state.
+- **Deck Import**:
+  - Added support for importing decks directly from **Moxfield** URLs.
+  - Automatically parses Commanders, Companions, Mainboard, and Sideboard.
+- **Advanced Validation**:
+  - **Card Count Check**: Enforces 100 cards (or 101 with Companion).
+  - **Scryfall Verification**: Validates card names against Scryfall API with local caching (`MTGCardDB`).
+  - **Intelligent Resolution**:
+    - Auto-retry logic for split cards and minor typos.
+    - Interactive modal to manually resolve unknown cards with autocomplete suggestions.
+  - **Bulk CSV Validation**:
+    - Validates all decks during CSV import with a visual progress bar.
+    - Imports proceed even on error, flagging invalid decks with visual indicators (red background).
+    - "Deck Verified" button to clear error flags after manual review.
 
 #### Search & Discovery
 - **Card Search**: Integrated Scryfall Autocomplete API with debouncing (300ms).
@@ -39,3 +52,10 @@
 - **Sidebar Organization**: Player list is now split into "Pending" and "Completed" sections.
 - **Visual Feedback**: Added error states for images and confirmation dialogs for destructive actions.
 - **Responsiveness**: Layout adapts to show deck stats and controls appropriately.
+- **Deck View Enhancements**:
+  - **Commander Previews**: Hovering over commander names displays the card image.
+  - **Visual Polish**: Bold white text for archetypes; grouped stats and controls.
+  - **Controls**: Distinct styling for the "Edit" button (Yellow/Bold).
+- **Add Deck Modal**:
+  - Integrated real-time card counter in the header.
+  - Improved layout and "Validate" workflow before saving.
