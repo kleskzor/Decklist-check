@@ -916,9 +916,64 @@ window.openAddModal = () => {
             try {
                 // Použití CORS proxy pro obejití omezení prohlížeče
                 const targetUrl = `https://api.moxfield.com/v2/decks/all/${match[1]}`;
-                const resp = await fetch(`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`);
-                if (!resp.ok) throw new Error("Chyba API: " + resp.status);
-                const data = await resp.json();
+                let data;
+                let errorMsg = "";
+
+                // Definice proxy serverů a způsobů parsování
+                const proxies = [
+                    {
+                        name: "CorsProxy.io",
+                        getUrl: (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+                        parse: async (res) => await res.json()
+                    },
+                    {
+                        name: "AllOrigins (Raw)",
+                        getUrl: (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}&timestamp=${Date.now()}`,
+                        parse: async (res) => await res.json()
+                    },
+                    {
+                        name: "CodeTabs",
+                        getUrl: (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+                        parse: async (res) => await res.json()
+                    },
+                    {
+                        name: "AllOrigins (JSON)",
+                        getUrl: (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}&timestamp=${Date.now()}`,
+                        parse: async (res) => {
+                            const json = await res.json();
+                            if (!json.contents) throw new Error("No contents");
+                            return JSON.parse(json.contents);
+                        }
+                    },
+                    {
+                        name: "ThingProxy",
+                        getUrl: (url) => `https://thingproxy.freeboard.io/fetch/${url}`,
+                        parse: async (res) => await res.json()
+                    }
+                ];
+
+                for (const proxy of proxies) {
+                    if (data) break;
+                    try {
+                        const resp = await fetch(proxy.getUrl(targetUrl));
+                        if (resp.ok) {
+                            const json = await proxy.parse(resp);
+                            // Ověření, že jde o Moxfield data
+                            if (json && (json.commanders || json.mainboard)) {
+                                data = json;
+                            } else {
+                                errorMsg += `${proxy.name}: Invalid data; `;
+                            }
+                        } else {
+                            errorMsg += `${proxy.name}: Status ${resp.status}; `;
+                        }
+                    } catch (e) {
+                        console.warn(`${proxy.name} failed`, e);
+                        errorMsg += `${proxy.name}: ${e.message}; `;
+                    }
+                }
+
+                if (!data) throw new Error("Nepodařilo se stáhnout data přes proxy. Detaily: " + errorMsg);
 
                 const commanders = Object.keys(data.commanders || {});
                 const companions = Object.keys(data.companions || {});

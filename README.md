@@ -17,7 +17,7 @@ Ideas:
 - [x] delete tournament (with confirmation)
 - [ ] export to mtgtop8
 - [x] search by player name
-- [ ] change archetype text
+- [x] change archetype text
 - [x] place scripts and logic to a different file
 - [ ] add languages selection cz/en/fr
 - [x] option to save current tournament to a file
@@ -26,6 +26,5 @@ Ideas:
 - [x] refresh persistency
 - [x] decklist validation
 - [x] deck import from moxfield
-- [ ] deck import from mtggoldfish
 - [ ] add how to to menu
 - [ ] tournament management
