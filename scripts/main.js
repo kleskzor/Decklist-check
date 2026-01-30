@@ -338,7 +338,7 @@ async function validateCSVAndImport() {
         candidates.forEach(p => {
             p.cards.forEach(c => allNames.add(c.name));
             if (p.arch) {
-                const parts = p.arch.split(/[&+/]/).map(s => s.trim()).filter(s => s);
+                const parts = p.arch.split(/[&+]/).map(s => s.trim()).filter(s => s);
                 parts.forEach(n => allNames.add(normalizeCardName(n)));
             }
         });
@@ -357,7 +357,7 @@ async function validateCSVAndImport() {
             const deckCount = p.cards.reduce((sum, c) => sum + c.count, 0);
             let commanderCount = 0;
             if (p.arch) {
-                commanderCount = p.arch.split(/[&+/]/).filter(s => s.trim()).length;
+                commanderCount = p.arch.split(/[&+]/).filter(s => s.trim()).length;
             }
             const hasCompanion = p.arch && p.arch.includes('+');
             const target = hasCompanion ? 101 : 100;
@@ -425,7 +425,7 @@ async function parseCSV(text) {
     const candidates = rows.slice(1).map(r => {
         const name = `${r[fIdx]} ${r[lIdx]}`.trim();
         const list = r[listIdx] || "";
-        let arch = (r[archIdx] || "").replace(/\//g, ' & ');
+        let arch = (r[archIdx] || "").replace(/\/\/|\//g, (m) => m === '//' ? '//' : ' & ');
         let cards = [];
         list.split('\n').forEach(line => {
             const lineTrim = line.trim();
@@ -590,9 +590,8 @@ function renderDeck() {
            <button class="btn-check-all" onclick="checkAllCards()">Ověřit vše</button>
            <button class="btn-reset" onclick="resetDeck()">Reset</button>`;
 
-    const archHtml = p.arch ? p.arch.split(/([&+/])/).map(part => {
+    const archHtml = p.arch ? p.arch.split(/([&+])/).map(part => {
         const trimmed = part.trim();
-        if (trimmed === '/') return ' & ';
         if (!trimmed || ['&', '+'].includes(trimmed)) return part;
         return `<span class="commander-name" data-name="${trimmed}" style="cursor:help; border-bottom:1px dotted #888;">${part}</span>`;
     }).join('') : "";
@@ -1034,7 +1033,8 @@ window.openAddModal = () => {
 
             let commanderCount = 0;
             if (archText.trim()) {
-                commanderCount = archText.split(/[&+/]/).length;
+                const archNorm = archText.replace(/\/\/|\//g, (m) => m === '//' ? '//' : ' & ');
+                commanderCount = archNorm.split(/[&+]/).length;
             }
 
             const total = cardCount + commanderCount;
@@ -1119,7 +1119,8 @@ window.validateDeck = async () => {
 
         let commanderCount = 0;
         if (arch) {
-            const parts = arch.split(/[&+/]/).map(s => s.trim()).filter(s => s);
+            const archNorm = arch.replace(/\/\/|\//g, (m) => m === '//' ? '//' : ' & ');
+            const parts = archNorm.split(/[&+]/).map(s => s.trim()).filter(s => s);
             commanderCount = parts.length;
             parts.forEach(p => cardNames.push(normalizeCardName(p)));
         }
@@ -1306,10 +1307,10 @@ window.applyCardResolutions = async () => {
                         if (c.name === original) c.name = selected;
                     });
                     if (p.arch) {
-                        const parts = p.arch.split(/([&+/])/);
+                        const parts = p.arch.split(/([&+])/);
                         p.arch = parts.map(part => {
                             const trimmed = part.trim();
-                            if (!trimmed || ['&', '+', '/'].includes(trimmed)) return part;
+                            if (!trimmed || ['&', '+'].includes(trimmed)) return part;
                             if (normalizeCardName(trimmed) === original) {
                                 return part.replace(trimmed, selected); 
                             }
@@ -1346,10 +1347,10 @@ window.applyCardResolutions = async () => {
             decklistVal = newLines.join('\n');
 
             if (archetypeVal) {
-                const parts = archetypeVal.split(/([&+/])/);
+                const parts = archetypeVal.split(/([&+])/);
                 const newParts = parts.map(p => {
                     const trimmed = p.trim();
-                    if (!trimmed || ['&', '+', '/'].includes(trimmed)) return p;
+                    if (!trimmed || ['&', '+'].includes(trimmed)) return p;
                     if (normalizeCardName(trimmed) === original) return p.replace(trimmed, selected);
                     return p;
                 });
@@ -1370,7 +1371,7 @@ window.applyCardResolutions = async () => {
 
 window.saveNewPlayer = () => {
     const name = document.getElementById('newPlayerName').value.trim();
-    const arch = document.getElementById('newPlayerArchetype').value.trim().replace(/\//g, ' & ');
+    const arch = document.getElementById('newPlayerArchetype').value.trim().replace(/\/\/|\//g, (m) => m === '//' ? '//' : ' & ');
     const listText = document.getElementById('newDecklist').value;
 
     if (!name) { alert("Zadejte jméno hráče."); return; }
