@@ -105,6 +105,7 @@
                 <div class="menu-item" onclick="document.getElementById('dropdownMenu').style.display='none'; loadTestData()">🧪 Nahrát testovací data</div>
                 <div class="menu-item" onclick="document.getElementById('dropdownMenu').style.display='none'; showMeta()">📊 Tournament Meta</div>
                 <div class="menu-item" onclick="document.getElementById('dropdownMenu').style.display='none'; exportTournament()">💾 Uložit turnaj (CSV)</div>
+                <div class="menu-item" onclick="document.getElementById('dropdownMenu').style.display='none'; openHowToModal()" data-i18n="menuHowTo">❓ Nápověda</div>
                 <div class="menu-item" onclick="document.getElementById('dropdownMenu').style.display='none'; deleteAllPlayers()" style="color: var(--danger-color);">🗑️ Smazat vše</div>
             </div>
         </div>
@@ -147,6 +148,44 @@
         <h2 style="margin: 0;">Tournament Meta</h2>
         <div id="metaList" style="max-height: 400px; overflow-y: auto; margin: 15px 0;"></div>
         <button class="modal-btn" onclick="copyMetaToClipboard()">Zkopírovat do schránky</button>
+    </div>
+</div>
+
+<div id="exportModal" class="modal">
+    <div class="modal-content" style="width: 400px;">
+        <span class="close-modal" onclick="closeExportModal()">&times;</span>
+        <h2 style="margin: 0;">Export pro MTGTop8</h2>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+            <button class="modal-btn" onclick="copyExportArchetype()">Kopírovat Archetype</button>
+            <button class="modal-btn" onclick="copyExportPlayer()">Kopírovat Jméno hráče</button>
+            <button class="modal-btn" onclick="copyExportDecklist()">Kopírovat Decklist</button>
+        </div>
+    </div>
+</div>
+
+<div id="howToModal" class="modal">
+    <div class="modal-content" style="max-width: 800px;">
+        <span class="close-modal" onclick="closeHowToModal()">&times;</span>
+        <h2 style="margin: 0 0 15px 0;" data-i18n="modalHowToTitle">Jak používat aplikaci</h2>
+        <div style="overflow-y: auto; max-height: 70vh; line-height: 1.6;">
+            <h3 data-i18n="htUploadTitle" style="color: var(--accent-color); margin-bottom: 5px;"></h3>
+            <p data-i18n="htUploadDesc" style="margin-top: 0; color: #ccc;"></p>
+            
+            <h3 data-i18n="htAddDeckTitle" style="color: var(--accent-color); margin-bottom: 5px;"></h3>
+            <p data-i18n="htAddDeckDesc" style="margin-top: 0; color: #ccc;"></p>
+            
+            <h3 data-i18n="htCheckTitle" style="color: var(--accent-color); margin-bottom: 5px;"></h3>
+            <p data-i18n="htCheckDesc" style="margin-top: 0; color: #ccc;"></p>
+            
+            <h3 data-i18n="htSearchTitle" style="color: var(--accent-color); margin-bottom: 5px;"></h3>
+            <p data-i18n="htSearchDesc" style="margin-top: 0; color: #ccc;"></p>
+            
+            <h3 data-i18n="htExportTitle" style="color: var(--accent-color); margin-bottom: 5px;"></h3>
+            <p data-i18n="htExportDesc" style="margin-top: 0; color: #ccc;"></p>
+            
+            <h3 data-i18n="htStorageTitle" style="color: var(--accent-color); margin-bottom: 5px;"></h3>
+            <p data-i18n="htStorageDesc" style="margin-top: 0; color: #ccc;"></p>
+        </div>
     </div>
 </div>
 

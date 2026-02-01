@@ -105,6 +105,7 @@ function renderDeck() {
     const buttonsHtml = isEditMode 
         ? `<button class="btn-check-all" onclick="toggleEditMode()">Uložit Deck</button>`
         : `${verifyBtn}
+           <button class="btn-ctrl" style="background-color: #7b1fa2; color: white;" onclick="openExportModal()">Export MTGTop8</button>
            <button class="btn-ctrl" style="background-color: yellow; color: black; font-weight: bold;" onclick="toggleEditMode()">Upravit</button>
            <button class="btn-check-all" onclick="checkAllCards()">Ověřit vše</button>
            <button class="btn-reset" onclick="resetDeck()">Reset</button>`;

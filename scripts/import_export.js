@@ -198,3 +198,83 @@ window.exportTournament = () => {
     link.click();
     document.body.removeChild(link);
 };
+
+// --- MTG TOP 8 EXPORT ---
+window.openExportModal = () => {
+    if (!currentSelectedName) return;
+    document.getElementById('exportModal').style.display = "block";
+};
+
+window.closeExportModal = () => {
+    document.getElementById('exportModal').style.display = "none";
+};
+
+window.copyExportArchetype = () => {
+    if (!currentSelectedName) return;
+    const p = players.find(p => p.name === currentSelectedName);
+    if (p && p.arch) {
+        navigator.clipboard.writeText(p.arch).then(() => {
+            const btn = document.querySelector('#exportModal button[onclick="copyExportArchetype()"]');
+            const original = btn.textContent;
+            btn.textContent = "Zkopírováno!";
+            setTimeout(() => btn.textContent = original, 1500);
+        });
+    }
+};
+
+window.copyExportPlayer = () => {
+    if (!currentSelectedName) return;
+    const p = players.find(p => p.name === currentSelectedName);
+    if (p && p.name) {
+        navigator.clipboard.writeText(p.name).then(() => {
+            const btn = document.querySelector('#exportModal button[onclick="copyExportPlayer()"]');
+            const original = btn.textContent;
+            btn.textContent = "Zkopírováno!";
+            setTimeout(() => btn.textContent = original, 1500);
+        });
+    }
+};
+
+window.copyExportDecklist = () => {
+    if (!currentSelectedName) return;
+    const p = players.find(p => p.name === currentSelectedName);
+    if (!p) return;
+
+    let text = "";
+    // Mainboard
+    p.cards.forEach(c => {
+        text += `${c.count} ${c.name}\n`;
+    });
+
+    // Sideboard (Commanders + Companions)
+    text += "SIDEBOARD\n";
+    
+    if (p.arch) {
+        // Logic to split commanders and companions
+        // Assuming format: Commander1 & Commander2 + Companion
+        const parts = p.arch.split('+');
+        const commandersPart = parts[0];
+        const companionPart = parts.length > 1 ? parts[1] : null;
+
+        // Commanders
+        if (commandersPart) {
+            // Split by & or // (if not normalized)
+            const commanders = commandersPart.split(/&|\/\//).map(s => s.trim()).filter(s => s);
+            commanders.forEach(c => {
+                text += `1 ${c}\n`;
+            });
+        }
+
+        // Companion (last line)
+        if (companionPart) {
+            text += `1 ${companionPart.trim()}\n`;
+        }
+    }
+
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('#exportModal button[onclick="copyExportDecklist()"]');
+        const original = btn.textContent;
+        btn.textContent = "Zkopírováno!";
+        setTimeout(() => btn.textContent = original, 1500);
+    });
+};

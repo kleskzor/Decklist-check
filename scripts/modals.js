@@ -1,9 +1,7 @@
 // --- MODAL LOGIC ---
-window.openAddModal = () => {
+const initDeckModalUI = () => {
     const modal = document.getElementById('addDeckModal');
     const decklistArea = document.getElementById('newDecklist');
-
-    // Dynamické přidání počítadla karet
     if (!document.getElementById('addDeckStats')) {
         const statsContainer = document.createElement('div');
         statsContainer.id = 'addDeckStats';
@@ -87,7 +85,76 @@ window.openAddModal = () => {
 
         decklistArea.addEventListener('input', updateStats);
         document.getElementById('newPlayerArchetype').addEventListener('input', updateStats);
+
+        // Autocomplete pro Archetype
+        const archInput = document.getElementById('newPlayerArchetype');
+        if (archInput) {
+            const suggestionsBox = document.createElement('div');
+            suggestionsBox.id = 'archSuggestions';
+            suggestionsBox.style.cssText = "position: absolute; background: #222; border: 1px solid #555; z-index: 1000; max-height: 200px; overflow-y: auto; width: 100%; display: none; top: 100%; left: 0; box-shadow: 0 4px 8px rgba(0,0,0,0.5);";
+            
+            const parent = archInput.parentNode;
+            if (window.getComputedStyle(parent).position === 'static') {
+                parent.style.position = 'relative';
+            }
+            parent.appendChild(suggestionsBox);
+
+            let debounceTimer;
+            archInput.addEventListener('input', (e) => {
+                const val = e.target.value;
+                const parts = val.split(/(\s*\+\s*|\s*\/\/\s*|\s*&\s*)/);
+                const lastPart = parts[parts.length - 1];
+                
+                if (lastPart.trim().length < 3) {
+                    suggestionsBox.style.display = 'none';
+                    return;
+                }
+
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(async () => {
+                    try {
+                        const resp = await fetch(`https://api.scryfall.com/cards/autocomplete?q=${encodeURIComponent(lastPart.trim())}`);
+                        if (resp.ok) {
+                            const json = await resp.json();
+                            const data = json.data || [];
+                            
+                            suggestionsBox.innerHTML = "";
+                            if (data.length > 0) {
+                                data.forEach(name => {
+                                    const div = document.createElement('div');
+                                    div.textContent = name;
+                                    div.style.cssText = "padding: 8px; cursor: pointer; border-bottom: 1px solid #444; color: #eee;";
+                                    div.onmouseover = () => div.style.backgroundColor = "#444";
+                                    div.onmouseout = () => div.style.backgroundColor = "transparent";
+                                    div.onclick = () => {
+                                        parts[parts.length - 1] = name;
+                                        archInput.value = parts.join('');
+                                        suggestionsBox.style.display = 'none';
+                                        updateStats();
+                                    };
+                                    suggestionsBox.appendChild(div);
+                                });
+                                suggestionsBox.style.display = 'block';
+                            } else {
+                                suggestionsBox.style.display = 'none';
+                            }
+                        }
+                    } catch (e) { console.error(e); }
+                }, 300);
+            });
+
+            document.addEventListener('click', (e) => {
+                if (e.target !== archInput && !suggestionsBox.contains(e.target)) {
+                    suggestionsBox.style.display = 'none';
+                }
+            });
+        }
     }
+};
+
+window.openAddModal = () => {
+    initDeckModalUI();
+    const modal = document.getElementById('addDeckModal');
 
     modal.style.display = "block";
     document.getElementById('newPlayerName').focus();
@@ -105,6 +172,41 @@ window.openAddModal = () => {
         saveBtn.classList.remove('btn-success'); // Pokud existuje styl pro úspěch
         
         // Pokud uživatel něco změní, resetujeme tlačítko zpět na validaci
+        const resetBtn = () => {
+            saveBtn.textContent = "Ověřit decklist";
+            saveBtn.onclick = window.validateDeck;
+        };
+        document.getElementById('newDecklist').addEventListener('input', resetBtn, { once: true });
+        document.getElementById('newPlayerArchetype').addEventListener('input', resetBtn, { once: true });
+    }
+};
+
+window.openEditModal = (playerName) => {
+    const player = players.find(p => p.name === playerName);
+    if (!player) return;
+
+    initDeckModalUI();
+    const modal = document.getElementById('addDeckModal');
+    
+    document.getElementById('newPlayerName').value = player.name;
+    document.getElementById('newPlayerArchetype').value = player.arch || "";
+    
+    // Rekonstrukce decklistu
+    const listText = player.cards.map(c => `${c.count} ${c.name}`).join('\n');
+    document.getElementById('newDecklist').value = listText;
+
+    modal.style.display = "block";
+    
+    // Trigger pro aktualizaci statistik
+    document.getElementById('newDecklist').dispatchEvent(new Event('input'));
+    
+    // Nastavení tlačítka na Validaci
+    const saveBtn = document.querySelector('button[onclick="saveNewPlayer()"]');
+    if (saveBtn) {
+        saveBtn.textContent = "Ověřit decklist";
+        saveBtn.onclick = window.validateDeck;
+        saveBtn.classList.remove('btn-success');
+        
         const resetBtn = () => {
             saveBtn.textContent = "Ověřit decklist";
             saveBtn.onclick = window.validateDeck;
@@ -466,4 +568,44 @@ window.copyMetaToClipboard = () => {
     const listDiv = document.getElementById('metaList');
     const text = Array.from(listDiv.children).map(div => `${div.lastElementChild.textContent}x ${div.firstElementChild.textContent}`).join('\n');
     navigator.clipboard.writeText(text).then(() => alert("Zkopírováno do schránky!"));
+};
+
+// --- HOW TO MODAL ---
+window.openHowToModal = () => {
+    const modal = document.getElementById('howToModal');
+    modal.innerHTML = `
+        <div class="modal-content" style="background-color: #222; margin: 5% auto; padding: 20px; border: 1px solid #555; width: 90%; max-width: 800px; border-radius: 8px; color: #eee; position: relative; max-height: 90vh; overflow-y: auto;">
+            <span class="close" onclick="closeHowToModal()" style="position: absolute; right: 15px; top: 10px; font-size: 28px; cursor: pointer; color: #aaa;">&times;</span>
+            <h2 style="margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 10px; color: var(--warning-color, #ff9800);">Nápověda a Funkce</h2>
+            
+            <div style="line-height: 1.6;">
+                <h3 style="color: #81c784; border-bottom: 1px solid #333; padding-bottom: 5px;">📂 Import a Export</h3>
+                <ul style="margin-top: 5px;">
+                    <li><strong>Nahrát CSV:</strong> Umožňuje hromadně načíst decklisty ze souboru (např. export z Google Forms). Aplikace automaticky zpracuje jména, archetypy a karty.</li>
+                    <li><strong>Export mtgtop8:</strong> Vygeneruje textový výstup formátovaný pro vložení na mtgtop8.com (včetně sidebordu a commanderů).</li>
+                </ul>
+
+                <h3 style="color: #81c784; border-bottom: 1px solid #333; padding-bottom: 5px;">📝 Správa Decklistů</h3>
+                <ul style="margin-top: 5px;">
+                    <li><strong>Přidat decklist:</strong> Tlačítko pro manuální vložení jednoho hráče. Formulář obsahuje živé počítadlo karet (cíl: 100 nebo 101 s Companionem).</li>
+                    <li><strong>Editace:</strong> Kliknutím na hráče v seznamu zobrazíte detail. Zde lze upravit seznam karet, změnit archetyp nebo jméno. Změny se ukládají automaticky.</li>
+                    <li><strong>Validace:</strong> Probíhá kontrola legálnosti karet (Scryfall) a počtu karet. Neznámé karty lze opravit v interaktivním okně.</li>
+                </ul>
+
+                <h3 style="color: #81c784; border-bottom: 1px solid #333; padding-bottom: 5px;">📊 Ostatní</h3>
+                <ul style="margin-top: 5px;">
+                    <li><strong>Meta Game:</strong> Zobrazí statistiku archetypů v aktuálním turnaji.</li>
+                    <li><strong>Filtrování:</strong> Vyhledávací pole nad seznamem hráčů umožňuje rychle najít konkrétní decklist.</li>
+                </ul>
+            </div>
+            
+            <div style="margin-top: 20px; text-align: right;">
+                <button onclick="closeHowToModal()" class="btn-ctrl">Zavřít</button>
+            </div>
+        </div>
+    `;
+    modal.style.display = "block";
+};
+window.closeHowToModal = () => {
+    document.getElementById('howToModal').style.display = "none";
 };

@@ -15,7 +15,7 @@ Ideas:
 - [x] edit decklist
 - [x] delete player (with confirmation)
 - [x] delete tournament (with confirmation)
-- [ ] export to mtgtop8
+- [x] export to mtgtop8
 - [x] search by player name
 - [x] change archetype text
 - [x] place scripts and logic to a different file
