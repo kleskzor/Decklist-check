@@ -103,7 +103,8 @@ function renderDeck() {
     }
 
     const buttonsHtml = isEditMode 
-        ? `<button class="btn-check-all" onclick="toggleEditMode()">Uložit Deck</button>`
+        ? `<button class="btn-ctrl" onclick="window.editArchetype()" style="margin-right: 10px;">✎ Změnit archetyp</button>
+           <button class="btn-check-all" onclick="toggleEditMode()">Uložit Deck</button>`
         : `${verifyBtn}
            <button class="btn-ctrl" style="background-color: #7b1fa2; color: white;" onclick="openExportModal()">Export MTGTop8</button>
            <button class="btn-ctrl" style="background-color: yellow; color: black; font-weight: bold;" onclick="toggleEditMode()">Upravit</button>
@@ -356,4 +357,65 @@ window.showErrorModal = (title, messages) => {
         content.textContent = messages;
     }
     modal.style.display = "block";
+};
+
+window.setupArchetypeSearch = () => {
+    const input = document.getElementById('archetypeSearchInput');
+    const resultsDiv = document.getElementById('archetypeSearchResults');
+    
+    if (!input || !resultsDiv || input.dataset.initialized) return;
+    input.dataset.initialized = "true";
+
+    let searchTimeout;
+
+    input.addEventListener('input', () => {
+        const val = input.value;
+        if (val.length < 3) { resultsDiv.style.display = "none"; return; }
+        
+        if (searchTimeout) clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(async () => {
+            try {
+                const response = await fetch(`https://api.scryfall.com/cards/autocomplete?q=${encodeURIComponent(val)}`);
+                if (!response.ok) return;
+                const json = await response.json();
+                const suggestions = json.data.slice(0, 5);
+                
+                resultsDiv.innerHTML = "";
+                if (suggestions.length > 0) {
+                    resultsDiv.style.display = "block";
+                    suggestions.forEach((name) => {
+                        const div = document.createElement('div');
+                        div.className = 'autocomplete-item';
+                        div.textContent = name;
+                        div.onclick = () => {
+                            input.value = name;
+                            resultsDiv.style.display = "none";
+                        };
+                        resultsDiv.appendChild(div);
+                    });
+                } else {
+                    resultsDiv.style.display = "none";
+                }
+            } catch (e) { console.error(e); }
+        }, 300);
+    });
+
+    document.addEventListener('click', (e) => {
+        if (e.target !== input && e.target !== resultsDiv) {
+            resultsDiv.style.display = 'none';
+        }
+    });
+};
+
+window.closeArchetypeModal = () => {
+    const modal = document.getElementById('editArchetypeModal');
+    if (modal) modal.style.display = 'none';
+};
+
+window.saveArchetypeFromModal = () => {
+    const input = document.getElementById('archetypeSearchInput');
+    if (input) {
+        window.updateArchetype(input.value);
+        window.closeArchetypeModal();
+    }
 };

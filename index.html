@@ -142,6 +142,18 @@
     </div>
 </div>
 
+<div id="editArchetypeModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeArchetypeModal()">&times;</span>
+        <h2 style="margin: 0;">Změnit archetyp</h2>
+        <div class="search-container" style="margin-top: 15px;">
+            <input type="text" id="archetypeSearchInput" class="modal-input" placeholder="Hledat kartu (Commander/Archetyp)..." autocomplete="off" style="width: 100%; box-sizing: border-box;">
+            <div id="archetypeSearchResults" class="autocomplete-results"></div>
+        </div>
+        <button class="modal-btn" onclick="saveArchetypeFromModal()" style="margin-top: 15px;">Uložit</button>
+    </div>
+</div>
+
 <div id="metaModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeMetaModal()">&times;</span>

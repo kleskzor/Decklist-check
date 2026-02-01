@@ -97,3 +97,27 @@ window.addCardToDeck = (cardName) => {
         input.focus();
     }
 };
+
+window.updateArchetype = (newArchetype) => {
+    const p = players.find(p => p.name === currentSelectedName);
+    if (p) {
+        p.arch = newArchetype;
+        saveState();
+        renderDeck();
+        renderSidebar();
+    }
+};
+
+window.editArchetype = () => {
+    const p = players.find(p => p.name === currentSelectedName);
+    if (p) {
+        const modal = document.getElementById('editArchetypeModal');
+        const input = document.getElementById('archetypeSearchInput');
+        if (modal && input) {
+            input.value = p.arch || "";
+            modal.style.display = "block";
+            input.focus();
+            if (window.setupArchetypeSearch) window.setupArchetypeSearch();
+        }
+    }
+};
