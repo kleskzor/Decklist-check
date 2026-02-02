@@ -8,10 +8,12 @@ function updateHeaderStats() {
     }
     
     const done = players.filter(p => isPlayerDone(p)).length;
+    const invalid = players.filter(p => p.validationErrors && p.validationErrors.length > 0).length;
     stats.style.display = 'flex';
     stats.innerHTML = `
         <div class="stat-item"><span class="stat-value">${players.length}</span><span class="stat-label">Hráči</span></div>
         <div class="stat-item" style="color: var(--success-color)"><span class="stat-value">${done}</span><span class="stat-label">Hotovo</span></div>
+        ${invalid > 0 ? `<div class="stat-item" style="color: var(--danger-color)"><span class="stat-value">${invalid}</span><span class="stat-label">Chyby</span></div>` : ''}
     `;
 }
 
