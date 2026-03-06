@@ -81,12 +81,20 @@ function renderSidebar() {
     }
 }
 
-function renderDeck() {
-    if (!currentSelectedName) return;
+async function renderDeck() {
+    if (!currentSelectedName) {
+        document.getElementById('deckInfo').innerHTML = "";
+        document.getElementById('searchArea').innerHTML = "";
+        document.getElementById('deckGrid').innerHTML = "";
+        return;
+    }
     const p = players.find(p => p.name === currentSelectedName);
     const info = document.getElementById('deckInfo');
     const searchArea = document.getElementById('searchArea');
     const grid = document.getElementById('deckGrid');
+    
+    // Načteme detaily karet pro pokročilé vyhledávání
+    await preloadCardDetailsForDeck(p.cards);
     
     const total = p.cards.reduce((sum, c) => sum + c.count, 0);
     const remaining = p.cards.reduce((sum, c) => sum + c.current, 0);
@@ -249,26 +257,62 @@ function setupSearch() {
                 } catch (e) { console.error(e); }
             }, 300);
         } else {
-            const valLower = val.toLowerCase();
-            if (valLower.length < 2) { resultsDiv.style.display = "none"; return; }
-            const matches = p.cards.map((c, i) => ({...c, idx: i})).filter(c => c.name.toLowerCase().includes(valLower) && c.current > 0);
-            
-            resultsDiv.innerHTML = "";
-            if (matches.length > 0) {
-                resultsDiv.style.display = "block";
-                matches.forEach((m) => {
-                    const div = document.createElement('div');
-                    div.className = 'autocomplete-item';
-                    div.innerHTML = `<span>${m.name}</span> <span style="opacity:0.5">${m.current}x</span>`;
-                    div.onclick = () => {
-                        updateCard(m.idx, -1);
-                        input.value = "";
-                        resultsDiv.style.display = "none";
-                        input.focus();
-                    };
-                    resultsDiv.appendChild(div);
-                });
-            } else resultsDiv.style.display = "none";
+            if (searchTimeout) clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(async () => {
+                const valLower = input.value.toLowerCase();
+                if (valLower.length < 2) {
+                    resultsDiv.style.display = "none";
+                    return;
+                }
+
+                const searchDetails = await getCardDetails(valLower);
+
+                const matches = p.cards
+                    .map((c, i) => ({...c, idx: i}))
+                    .filter(c => {
+                        if (c.current === 0) return false;
+
+                        // 1. Přímá shoda v názvu
+                        if (c.name.toLowerCase().includes(valLower)) return true;
+
+                        // 2. Pokročilá shoda s použitím cache
+                        const cardDetails = window.cardDetailCache[c.name];
+                        if (cardDetails) {
+                            // Shoda v kanonickém názvu
+                            if (cardDetails.canonicalName.toLowerCase().includes(valLower)) return true;
+                            // Shoda podle oracle_id (stejná karta, jiný tisk)
+                            if (searchDetails && cardDetails.oracleId === searchDetails.oracleId) return true;
+                        }
+                        
+                        return false;
+                    });
+
+                resultsDiv.innerHTML = "";
+                if (matches.length > 0) {
+                    resultsDiv.style.display = "block";
+                    matches.forEach((m) => {
+                        const div = document.createElement('div');
+                        div.className = 'autocomplete-item';
+
+                        const cardDetails = window.cardDetailCache[m.name];
+                        let displayName = m.name;
+                        if (cardDetails && cardDetails.canonicalName.toLowerCase() !== m.name.toLowerCase()) {
+                            displayName = `${cardDetails.canonicalName} <span style="opacity:0.6; font-style:italic;">// ${m.name}</span>`;
+                        }
+
+                        div.innerHTML = `<span>${displayName}</span> <span style="opacity:0.5">${m.current}x</span>`;
+                        div.onclick = () => {
+                            updateCard(m.idx, -1);
+                            input.value = "";
+                            resultsDiv.style.display = "none";
+                            input.focus();
+                        };
+                        resultsDiv.appendChild(div);
+                    });
+                } else {
+                    resultsDiv.style.display = "none";
+                }
+            }, 300);
         }
     });
 

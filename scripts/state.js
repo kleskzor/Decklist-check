@@ -3,6 +3,7 @@ let currentSelectedName = null;
 let highlightedIndex = -1;
 let playerSearchQuery = "";
 const STORAGE_KEY = 'mtg_decklist_data';
+window.cardDetailCache = {};
 let isEditMode = false;
 let searchTimeout = null;
 

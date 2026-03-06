@@ -79,16 +79,71 @@ async function getCardImageUrl(cardName) {
     });
 }
 
+const cardDetailsStoreName = "cardDetails";
+
+async function getCardDetails(name) {
+    if (!name) return null;
+    if (window.cardDetailCache[name]) return window.cardDetailCache[name];
+
+    const db = await initCardDB();
+    const tx = db.transaction(cardDetailsStoreName, "readonly");
+    const store = tx.objectStore(cardDetailsStoreName);
+    const req = store.get(name);
+
+    return new Promise((resolve) => {
+        req.onsuccess = async () => {
+            if (req.result) {
+                window.cardDetailCache[name] = req.result;
+                resolve(req.result);
+            } else {
+                await delay(100);
+                try {
+                    const response = await fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(name)}`);
+                    if (!response.ok) {
+                        resolve(null);
+                        return;
+                    }
+                    const cardData = await response.json();
+                    const details = {
+                        inputName: name,
+                        oracleId: cardData.oracle_id,
+                        canonicalName: cardData.name,
+                        timestamp: Date.now()
+                    };
+
+                    const writeTx = db.transaction(cardDetailsStoreName, "readwrite");
+                    writeTx.objectStore(cardDetailsStoreName).put(details);
+                    window.cardDetailCache[name] = details;
+                    resolve(details);
+                } catch (e) {
+                    resolve(null);
+                }
+            }
+        };
+        req.onerror = () => resolve(null);
+    });
+}
+
+async function preloadCardDetailsForDeck(deckCards) {
+    const uniqueNames = [...new Set(deckCards.map(c => c.name))];
+    const promises = uniqueNames.map(name => getCardDetails(name));
+    await Promise.all(promises);
+}
+
 // --- CARD VALIDATION DB ---
 const cardDbName = "MTGCardDB";
 const cardStoreName = "validCards";
 
 function initCardDB() {
     return new Promise((resolve) => {
-        const request = indexedDB.open(cardDbName, 1);
+        const request = indexedDB.open(cardDbName, 2); // Verze navýšena pro upgrade
         request.onupgradeneeded = (e) => {
-            if (!e.target.result.objectStoreNames.contains(cardStoreName)) {
-                e.target.result.createObjectStore(cardStoreName, { keyPath: "name" });
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(cardStoreName)) {
+                db.createObjectStore(cardStoreName, { keyPath: "name" });
+            }
+            if (!db.objectStoreNames.contains(cardDetailsStoreName)) {
+                db.createObjectStore(cardDetailsStoreName, { keyPath: "inputName" });
             }
         };
         request.onsuccess = (e) => resolve(e.target.result);
