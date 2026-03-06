@@ -23,7 +23,7 @@ async function getSmartImage(cardName, imgElement, placeholderElement) {
         } else {
             // Přidáme malou prodlevu, abychom nespamovali Scryfall (prevence Error 429)
             await delay(100); 
-            const scryfallUrl = `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(cardName)}&format=image&version=normal`;
+            const scryfallUrl = `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardName)}&format=image&version=normal`;
             
             try {
                 const response = await fetch(scryfallUrl);
@@ -62,7 +62,7 @@ async function getCardImageUrl(cardName) {
                 resolve(URL.createObjectURL(getReq.result));
             } else {
                 await delay(100); 
-                const scryfallUrl = `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(cardName)}&format=image&version=normal`;
+                const scryfallUrl = `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardName)}&format=image&version=normal`;
                 try {
                     const response = await fetch(scryfallUrl);
                     if (!response.ok) throw new Error("Scryfall limit");
