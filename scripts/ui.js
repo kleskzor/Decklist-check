@@ -1,8 +1,17 @@
 window.isSidebarHidden = false;
+window.cardsPerRow = 6;
 
 window.toggleSidebar = () => {
     window.isSidebarHidden = !window.isSidebarHidden;
     renderSidebar();
+};
+
+window.updateGridColumns = (val) => {
+    window.cardsPerRow = val;
+    const grid = document.getElementById('deckGrid');
+    if (grid) {
+        grid.style.gridTemplateColumns = `repeat(${val}, minmax(0, 1fr))`;
+    }
 };
 
 function updateHeaderStats() {
@@ -154,6 +163,15 @@ async function renderDeck() {
            <button class="btn-check-all" onclick="checkAllCards()">Ověřit vše</button>
            <button class="btn-reset" onclick="resetDeck()">Reset</button>`;
 
+    const sliderHtml = `
+        <div style="display:flex; align-items:center; gap:5px; margin-right:10px;" title="Velikost karet">
+            <span style="font-size:1.2rem;">🖼️</span>
+            <input type="range" min="2" max="12" value="${window.cardsPerRow}" 
+                oninput="window.updateGridColumns(this.value)" 
+                style="width:80px; cursor:pointer;">
+        </div>
+    `;
+
     const archHtml = p.arch ? p.arch.split(/([&+])/).map(part => {
         const trimmed = part.trim();
         if (!trimmed || ['&', '+'].includes(trimmed)) return part;
@@ -168,6 +186,7 @@ async function renderDeck() {
             </div>
             <div style="display:flex; align-items:center; gap: 20px; flex-wrap: wrap; justify-content: flex-end;">
                 ${statsHtml}
+                ${sliderHtml}
                 <div style="display:flex; gap: 8px;">${buttonsHtml}</div>
             </div>
         </div>
@@ -192,6 +211,10 @@ async function renderDeck() {
     setupSearch();
 
     grid.innerHTML = "";
+    grid.style.display = "grid";
+    grid.style.gridTemplateColumns = `repeat(${window.cardsPerRow}, minmax(0, 1fr))`;
+    grid.style.gridAutoRows = "min-content";
+    grid.style.gap = "0";
     const cardsWithIdx = p.cards.map((c, i) => ({...c, originalIdx: i}));
     
     let displayCards;
@@ -204,10 +227,18 @@ async function renderDeck() {
     displayCards.forEach((card) => {
         const container = document.createElement('div');
         container.className = `card-container ${!isEditMode && card.current === 0 ? 'done' : ''}`;
+        container.style.margin = "0";
+        container.style.aspectRatio = "2/3";
+        container.style.setProperty('height', 'auto', 'important');
+        container.style.minHeight = "0";
+        container.style.display = "flex";
+        container.style.flexDirection = "column";
         
         // Image Wrapper
         const wrapper = document.createElement('div');
         wrapper.className = 'card-image-wrapper';
+        wrapper.style.flex = "1";
+        wrapper.style.overflow = "hidden";
         if (!isEditMode) {
             wrapper.onclick = () => updateCard(card.originalIdx, -1);
         }
@@ -220,6 +251,9 @@ async function renderDeck() {
         // Samotný obrázek
         const img = document.createElement('img');
         img.className = 'card-image';
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.display = "block";
         img.alt = card.name;
 
         getSmartImage(card.name, img, placeholder);
