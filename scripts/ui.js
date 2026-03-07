@@ -1,3 +1,10 @@
+window.isSidebarHidden = false;
+
+window.toggleSidebar = () => {
+    window.isSidebarHidden = !window.isSidebarHidden;
+    renderSidebar();
+};
+
 function updateHeaderStats() {
     const stats = document.getElementById('headerStats');
     if (!stats) return;
@@ -10,16 +17,42 @@ function updateHeaderStats() {
     const done = players.filter(p => isPlayerDone(p)).length;
     const invalid = players.filter(p => p.validationErrors && p.validationErrors.length > 0).length;
     stats.style.display = 'flex';
+    
+    const toggleIcon = window.isSidebarHidden ? "▶" : "◀";
+    
     stats.innerHTML = `
         <div class="stat-item"><span class="stat-value">${players.length}</span><span class="stat-label">Hráči</span></div>
         <div class="stat-item" style="color: var(--success-color)"><span class="stat-value">${done}</span><span class="stat-label">Hotovo</span></div>
         ${invalid > 0 ? `<div class="stat-item" style="color: var(--danger-color)"><span class="stat-value">${invalid}</span><span class="stat-label">Chyby</span></div>` : ''}
+        <div class="stat-item" style="margin-left: auto; cursor: pointer; padding: 0 5px;" onclick="toggleSidebar()" title="${window.isSidebarHidden ? 'Zobrazit' : 'Schovat'} panel">
+            <span class="stat-value" style="font-size: 1.2rem;">${toggleIcon}</span>
+        </div>
     `;
 }
 
 function renderSidebar() {
     updateHeaderStats();
     const sb = document.getElementById('playerList');
+    const search = document.getElementById('playerSearchInput');
+    const addBtn = document.querySelector('button[onclick="openAddModal()"]');
+    let sidebar = document.getElementById('sidebar');
+    
+    // Fallback: if no #sidebar, try parent of playerList (if not body)
+    if (!sidebar && sb && sb.parentElement && sb.parentElement.tagName !== 'BODY') {
+        sidebar = sb.parentElement;
+    }
+    
+    const displayStyle = window.isSidebarHidden ? 'none' : '';
+    
+    if (sidebar) {
+        sidebar.style.display = displayStyle;
+        if (addBtn && !sidebar.contains(addBtn)) addBtn.style.display = displayStyle;
+    } else {
+        if (sb) sb.style.display = displayStyle;
+        if (search) search.style.display = displayStyle;
+        if (addBtn) addBtn.style.display = displayStyle;
+    }
+    
     sb.innerHTML = "";
     if (players.length === 0) {
         sb.innerHTML = '<div style="padding: 20px; opacity: 0.5; text-align: center;">Nahrajte CSV soubor...</div>';
