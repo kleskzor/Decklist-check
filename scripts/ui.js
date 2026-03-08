@@ -217,11 +217,16 @@ async function renderDeck() {
     grid.style.gap = "0";
     const cardsWithIdx = p.cards.map((c, i) => ({...c, originalIdx: i}));
     
+    const sortFn = (a, b) => {
+        if (b.count !== a.count) return b.count - a.count;
+        return a.name.localeCompare(b.name);
+    };
+    
     let displayCards;
     if (isEditMode) {
-        displayCards = cardsWithIdx;
+        displayCards = cardsWithIdx.sort(sortFn);
     } else {
-        displayCards = [...cardsWithIdx.filter(c => c.current > 0), ...cardsWithIdx.filter(c => c.current === 0)];
+        displayCards = [...cardsWithIdx.filter(c => c.current > 0).sort(sortFn), ...cardsWithIdx.filter(c => c.current === 0).sort(sortFn)];
     }
 
     displayCards.forEach((card) => {
