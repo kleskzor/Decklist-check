@@ -1,3 +1,18 @@
+window.loadTournament = async (filePath, tournamentName) => {
+    if (players.length > 0 && !confirm(`Opravdu chcete načíst turnaj "${tournamentName}"? Tím přepíšete aktuální data.`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(filePath);
+        if (!response.ok) throw new Error(`HTTP chyba: ${response.status}`);
+        const text = await response.text();
+        await parseCSV(text);
+    } catch (err) {
+        console.error(err);
+        alert(`Nepodařilo se načíst turnajová data pro "${tournamentName}".\n\nPoznámka: Tlačítko funguje pouze pokud aplikace běží na webovém serveru (http/https). Při lokálním otevření (file://) prohlížeč načítání blokuje.\n\nDetaily chyby: ` + err.message);
+    }
+}
 // --- CSV PARSING ---
 async function loadTestData() {
     try {
