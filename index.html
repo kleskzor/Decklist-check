@@ -75,6 +75,10 @@
         .menu-item:hover { background: #333; }
         .menu-item:last-child { border-bottom: none; }
 
+        .submenu { background: #1a1a1a; }
+        .submenu .menu-item { padding-left: 30px; }
+        .submenu .menu-item:hover { background: #444; }
+
         /* Modal & Sidebar Footer */
         #playerList { flex: 1; overflow-y: auto; }
         .sidebar-footer { padding: 10px; border-top: 1px solid var(--border-color); background: #151515; }
@@ -103,6 +107,10 @@
             <div id="dropdownMenu" class="dropdown-menu">
                 <div class="menu-item" onclick="document.getElementById('dropdownMenu').style.display='none'; document.getElementById('fileInput').click()">📂 Nahrát decklisty (CSV)</div>
                 <div class="menu-item" onclick="document.getElementById('dropdownMenu').style.display='none'; loadTestData()">🧪 Nahrát testovací data</div>
+                <div class="menu-item" onclick="event.stopPropagation(); this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block'">🏆 Nahrát Turnaj</div>
+                <div class="submenu" style="display: none;">
+                    <div class="menu-item" onclick="document.getElementById('dropdownMenu').style.display='none'; loadTournament('./tournament_data/31st PDC.csv', '31st Černý Rytíř PDC')">31st Černý Rytíř PDC</div>
+                </div>
                 <div class="menu-item" onclick="document.getElementById('dropdownMenu').style.display='none'; showMeta()">📊 Tournament Meta</div>
                 <div class="menu-item" onclick="document.getElementById('dropdownMenu').style.display='none'; exportTournament()">💾 Uložit turnaj (CSV)</div>
                 <div class="menu-item" onclick="document.getElementById('dropdownMenu').style.display='none'; openHowToModal()" data-i18n="menuHowTo">❓ Nápověda</div>
